@@ -5,6 +5,7 @@ import com.mick.mchat.user.UserApi;
 import com.mick.mchat.user.UserController;
 import com.mick.mchat.user.UserRepository;
 import com.mick.mchat.websocket.MChatWsHandler;
+import com.mick.mchat.websocket.MessageDispatcher;
 import com.mick.mchat.websocket.WsContextStore;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
@@ -51,7 +52,9 @@ public class Main {
                 new UserController(new UserApi(userRepository), secureUserExtractor)
         );
 
-        MChatWsHandler mChatWsHandler = new MChatWsHandler(new WsContextStore(), secureUserExtractor);
+        MessageDispatcher messageDispatcher = new MessageDispatcher();
+
+        MChatWsHandler mChatWsHandler = new MChatWsHandler(new WsContextStore(), secureUserExtractor, messageDispatcher);
 
         //wscontext
         javalin.ws("/api/ws", ws -> {

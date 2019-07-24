@@ -1,15 +1,30 @@
 package com.mick.mchat;
 
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.mick.mchat.conversation.WsChatMessage;
+import com.mick.mchat.user.WsUserConnectedMessage;
+
 import java.util.UUID;
 
 /**
- * Base class for all websocket messages
+ * Base class for all websocket messages, lets do some polymorphic deserialization yehawww
  * */
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "wsMessageType",
+        defaultImpl = WsChatMessage.class,
+        visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = WsChatMessage.class, name = "CHAT_MESSAGE"),
+        @JsonSubTypes.Type(value = WsUserConnectedMessage.class, name = "USER_CONNECTED"),
+})
 public abstract class WsMessage<T> {
     private UUID userUuid;
     private WsMessageType wsMessageType;
     private long dateCreated;
+    private T body;
 
     public UUID getUserUuid() {
         return userUuid;
@@ -38,12 +53,22 @@ public abstract class WsMessage<T> {
         return this;
     }
 
+    public T getBody() {
+        return body;
+    }
+
+    public WsMessage<T> setBody(T body) {
+        this.body = body;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "WsMessage{" +
                 "userUuid=" + userUuid +
                 ", wsMessageType=" + wsMessageType +
                 ", dateCreated=" + dateCreated +
+                ", body=" + body +
                 '}';
     }
 }

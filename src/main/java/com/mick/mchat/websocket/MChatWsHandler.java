@@ -1,6 +1,7 @@
 package com.mick.mchat.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mick.mchat.WsMessage;
 import com.mick.mchat.user.SecureUser;
 import com.mick.mchat.user.SecureUserExtractor;
 import io.javalin.websocket.*;
@@ -9,11 +10,17 @@ import org.jetbrains.annotations.NotNull;
 public class MChatWsHandler implements WsConnectHandler, WsCloseHandler, WsErrorHandler, WsMessageHandler {
     private final WsContextStore wsContextStore;
     private final SecureUserExtractor secureUserExtractor;
+    private final MessageDispatcher messageDispatcher;
     private final ObjectMapper objectMapper;
 
-    public MChatWsHandler(final WsContextStore wsContextStore, final SecureUserExtractor secureUserExtractor) {
+    public MChatWsHandler(
+            final WsContextStore wsContextStore,
+            final SecureUserExtractor secureUserExtractor,
+            final MessageDispatcher messageDispatcher
+    ) {
         this.wsContextStore = wsContextStore;
         this.secureUserExtractor = secureUserExtractor;
+        this.messageDispatcher = messageDispatcher;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -37,6 +44,6 @@ public class MChatWsHandler implements WsConnectHandler, WsCloseHandler, WsError
     @Override
     public void handleMessage(@NotNull WsMessageContext wsMessageContext) throws Exception {
         SecureUser secureUser = secureUserExtractor.getSecureUser(wsMessageContext.cookie("mchat"));
-        String message = wsMessageContext.message();
+        messageDispatcher.dispatchMessage(secureUser.getUser(), objectMapper.readValue(wsMessageContext.message(), WsMessage.class));
     }
 }
