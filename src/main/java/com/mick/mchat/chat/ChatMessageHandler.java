@@ -1,12 +1,12 @@
-package com.mick.mchat.conversation.ws;
+package com.mick.mchat.chat;
 
-import com.mick.mchat.MChatException;
-import com.mick.mchat.websocket.MessageHandler;
-import com.mick.mchat.websocket.WebsocketMessageMapper;
-import com.mick.mchat.conversation.ChatMessageRepository;
 import com.mick.mchat.conversation.Conversation;
 import com.mick.mchat.conversation.ConversationStore;
-import com.mick.mchat.websocket.WsContextStore;
+import com.mick.mchat.error.MChatException;
+import com.mick.mchat.websocket.*;
+import com.mick.mchat.websocket.model.MessageType;
+import com.mick.mchat.websocket.model.WebsocketMessage;
+import com.mick.mchat.websocket.WebsocketMessageMapper;
 import io.javalin.websocket.WsContext;
 
 import javax.inject.Inject;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Singleton
-public class ChatMessageHandler implements MessageHandler<WebsocketChatMessage> {
+public class ChatMessageHandler implements MessageHandler<ChatMessageBody> {
     private final WsContextStore wsContextStore;
     private final ConversationStore conversationStore;
     private final ChatMessageRepository chatMessageRepository;
@@ -32,8 +32,8 @@ public class ChatMessageHandler implements MessageHandler<WebsocketChatMessage> 
     }
 
     @Override
-    public void handleMessage(WebsocketChatMessage websocketMessage) throws MChatException {
-        Conversation conversation = conversationStore.getConversation(websocketMessage.getConversationUuid());
+    public void handleMessage(WebsocketMessage<ChatMessageBody> websocketMessage, WsContext wsMessageContext) throws MChatException {
+        Conversation conversation = conversationStore.getConversation(websocketMessage.getBody().getConversationUuid());
 
         List<WsContext> wsContextForUsers = wsContextStore.getWsContextForUsers(conversation.getParticipants());
 
@@ -45,5 +45,10 @@ public class ChatMessageHandler implements MessageHandler<WebsocketChatMessage> 
                     }
                 }
         );
+    }
+
+    @Override
+    public MessageType getMessageType() {
+        return MessageType.CHAT_MESSAGE;
     }
 }

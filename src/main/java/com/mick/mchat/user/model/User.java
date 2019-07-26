@@ -1,4 +1,4 @@
-package com.mick.mchat.user;
+package com.mick.mchat.user.model;
 
 import java.util.UUID;
 

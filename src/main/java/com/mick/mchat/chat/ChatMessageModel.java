@@ -1,8 +1,8 @@
-package com.mick.mchat.conversation;
+package com.mick.mchat.chat;
 
 import java.util.UUID;
 
-public class ChatMessageApiModel {
+public class ChatMessageModel {
     private long dateCreated;
     private String body;
     private ChatMessageType type;
@@ -12,7 +12,7 @@ public class ChatMessageApiModel {
         return dateCreated;
     }
 
-    public ChatMessageApiModel setDateCreated(long dateCreated) {
+    public ChatMessageModel setDateCreated(long dateCreated) {
         this.dateCreated = dateCreated;
         return this;
     }
@@ -21,7 +21,7 @@ public class ChatMessageApiModel {
         return body;
     }
 
-    public ChatMessageApiModel setBody(String body) {
+    public ChatMessageModel setBody(String body) {
         this.body = body;
         return this;
     }
@@ -30,7 +30,7 @@ public class ChatMessageApiModel {
         return type;
     }
 
-    public ChatMessageApiModel setType(ChatMessageType type) {
+    public ChatMessageModel setType(ChatMessageType type) {
         this.type = type;
         return this;
     }
@@ -39,7 +39,7 @@ public class ChatMessageApiModel {
         return conversationUuid;
     }
 
-    public ChatMessageApiModel setConversationUuid(UUID conversationUuid) {
+    public ChatMessageModel setConversationUuid(UUID conversationUuid) {
         this.conversationUuid = conversationUuid;
         return this;
     }

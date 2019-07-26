@@ -1,4 +1,4 @@
-package com.mick.mchat;
+package com.mick.mchat.error;
 
 public class MChatException extends Exception {
     public MChatException() {

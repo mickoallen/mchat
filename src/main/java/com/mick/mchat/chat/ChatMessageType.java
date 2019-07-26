@@ -1,4 +1,4 @@
-package com.mick.mchat.conversation;
+package com.mick.mchat.chat;
 
 public enum ChatMessageType {
     TEXT,

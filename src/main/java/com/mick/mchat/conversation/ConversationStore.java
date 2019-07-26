@@ -1,6 +1,6 @@
 package com.mick.mchat.conversation;
 
-import com.mick.mchat.NotFoundException;
+import com.mick.mchat.error.NotFoundException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

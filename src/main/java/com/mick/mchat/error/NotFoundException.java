@@ -1,6 +1,4 @@
-package com.mick.mchat;
-
-import com.mick.mchat.MChatException;
+package com.mick.mchat.error;
 
 public class NotFoundException extends MChatException {
     public NotFoundException() {

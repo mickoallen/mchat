@@ -1,9 +1,11 @@
 package com.mick.mchat.user;
 
-import com.mick.mchat.MChatException;
+import com.mick.mchat.error.MChatException;
 import com.mick.mchat.websocket.MessageHandler;
 import com.mick.mchat.conversation.ConversationRepository;
-import com.mick.mchat.user.ws.UserConnectedMessage;
+import com.mick.mchat.user.model.UserConnectedMessage;
+import com.mick.mchat.websocket.model.MessageType;
+import com.mick.mchat.websocket.model.WebsocketMessage;
 import com.mick.mchat.websocket.WsContextStore;
 import io.javalin.websocket.WsContext;
 
@@ -23,12 +25,19 @@ public class UserConnectedHandler implements MessageHandler<UserConnectedMessage
     }
 
     @Override
-    public void handleMessage(UserConnectedMessage userConnectedMessage) throws MChatException {
+    public void handleMessage(WebsocketMessage<UserConnectedMessage> websocketMessage, WsContext wsContext) throws MChatException {
         Collection<WsContext> allWsContexts = wsContextStore.getAllWsContexts();
 
-        //for now just notify everyone
-        allWsContexts.forEach(wsContext -> wsContext.send(userConnectedMessage));
+        UserConnectedMessage userConnectedMessage = websocketMessage.getBody();
 
-        conversationRepository.addUserToConversation(userConnectedMessage.getUserUuid());
+        //for now just notify everyone
+        allWsContexts.forEach(currentConnections -> currentConnections.send(userConnectedMessage));
+
+        conversationRepository.addUserToConversation(websocketMessage.getInfo().getUserUuid());
+    }
+
+    @Override
+    public MessageType getMessageType() {
+        return MessageType.USER_CONNECTED;
     }
 }

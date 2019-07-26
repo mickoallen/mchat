@@ -1,46 +1,39 @@
 package com.mick.mchat.websocket;
 
-import com.mick.mchat.conversation.ws.ChatMessageHandler;
-import com.mick.mchat.conversation.ws.WebsocketChatMessage;
-import com.mick.mchat.user.User;
-import com.mick.mchat.user.UserConnectedHandler;
-import com.mick.mchat.user.ws.UserConnectedMessage;
+import com.mick.mchat.error.MChatException;
+import com.mick.mchat.websocket.model.MessageType;
+import com.mick.mchat.websocket.model.WebsocketMessage;
+import io.javalin.websocket.WsContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Map;
 
 /**
  * Could use some in mem message broker instead. For this to scale to multiple nodes we'll need that.
  */
 @Singleton
 public class MessageDispatcher {
+    private final static Logger logger = LoggerFactory.getLogger(MessageDispatcher.class);
 
-    private final ChatMessageHandler chatMessageHandler;
-    private final UserConnectedHandler userConnectedHandler;
+    private final Map<MessageType, MessageHandler> messageHandlerMap;
 
     @Inject
-    public MessageDispatcher(ChatMessageHandler chatMessageHandler, UserConnectedHandler userConnectedHandler) {
-        this.chatMessageHandler = chatMessageHandler;
-        this.userConnectedHandler = userConnectedHandler;
+    public MessageDispatcher(Map<MessageType, MessageHandler> messageHandlerMap) {
+        this.messageHandlerMap = messageHandlerMap;
     }
 
-    public void dispatchMessage(User user, WebsocketMessage websocketMessage){
+    public void dispatchMessage(WebsocketMessage websocketMessage, WsContext wsContext) {
+
+        MessageHandler<?> messageHandler = messageHandlerMap.get(websocketMessage.getBody().getMessageType());
         try {
-            switch (websocketMessage.getWebsocketMessageType()) {
-                case CHAT_MESSAGE:
-                    chatMessageHandler.handleMessage((WebsocketChatMessage) websocketMessage);
-                    break;
-                case USER_CONNECTED:
-                    userConnectedHandler.handleMessage((UserConnectedMessage) websocketMessage);
-                    break;
-                case USER_DISCONNECTED:
-                    break;
-                case NOTIFICATION:
-                    break;
-            }
-        }catch (Exception e){
-            //log something
-            throw new RuntimeException(e);
+            //noinspection unchecked
+            messageHandler.handleMessage(websocketMessage, wsContext);
+        } catch (MChatException e) {
+            logger.error("Exception handling message: {}", websocketMessage, e);
+            //todo - return some error to ui?
         }
     }
 }

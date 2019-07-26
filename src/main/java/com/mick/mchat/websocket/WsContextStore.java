@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class WsContextStore {
+    /* <User UUIDs, Their respective ws connection> */
     private final Map<UUID, WsContext> userWsContexts;
 
     @Inject
