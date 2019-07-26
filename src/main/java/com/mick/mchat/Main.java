@@ -1,11 +1,14 @@
 package com.mick.mchat;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.mick.mchat.user.SecureUserExtractor;
 import com.mick.mchat.user.UserApi;
 import com.mick.mchat.user.UserController;
 import com.mick.mchat.user.UserRepository;
 import com.mick.mchat.websocket.MChatWsHandler;
 import com.mick.mchat.websocket.MessageDispatcher;
+import com.mick.mchat.websocket.TestMessage;
 import com.mick.mchat.websocket.WsContextStore;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
@@ -44,17 +47,9 @@ public class Main {
             });
         }).start(7070);
 
+        Injector guiceInjector = Guice.createInjector(new GuiceModule());
 
-        UserRepository userRepository = new UserRepository();
-        SecureUserExtractor secureUserExtractor = new SecureUserExtractor(userRepository);
-        //controllers
-        List<MController> controllers = List.of(
-                new UserController(new UserApi(userRepository), secureUserExtractor)
-        );
-
-        MessageDispatcher messageDispatcher = new MessageDispatcher();
-
-        MChatWsHandler mChatWsHandler = new MChatWsHandler(new WsContextStore(), secureUserExtractor, messageDispatcher);
+        MChatWsHandler mChatWsHandler = guiceInjector.getInstance(MChatWsHandler.class);
 
         //wscontext
         javalin.ws("/api/ws", ws -> {
@@ -65,11 +60,11 @@ public class Main {
         });
 
         //add api routes
-        controllers.forEach(mController ->
-                javalin.routes(
-                        () -> path("/api", mController.getEndpointGroup())
-                )
-        );
+//        controllers.forEach(mController ->
+//                javalin.routes(
+//                        () -> path("/api", mController.getEndpointGroup())
+//                )
+//        );
 
         javalin.routes(() ->
                 get("/api/health", (context) -> {

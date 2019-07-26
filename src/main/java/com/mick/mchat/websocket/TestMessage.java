@@ -1,4 +1,4 @@
-package com.mick.mchat;
+package com.mick.mchat.websocket;
 
 import io.javalin.websocket.WsContext;
 import java.util.Set;

@@ -1,6 +1,6 @@
-package com.mick.mchat;
+package com.mick.mchat.websocket;
 
-public enum WsMessageType {
+public enum WebsocketMessageType {
     CHAT_MESSAGE,
     USER_CONNECTED,
     USER_DISCONNECTED,

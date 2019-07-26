@@ -5,17 +5,21 @@ import com.mick.mchat.MController;
 import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.apibuilder.ApiBuilder.get;
 
+@Singleton
 public class UserController implements MController {
 
     private final UserApi userApi;
     private final SecureUserExtractor secureUserExtractor;
 
-    public UserController(final UserApi userApi, SecureUserExtractor secureUserExtractor) {
+    @Inject
+    public UserController(final UserApi userApi, final SecureUserExtractor secureUserExtractor) {
         this.userApi = userApi;
         this.secureUserExtractor = secureUserExtractor;
     }
