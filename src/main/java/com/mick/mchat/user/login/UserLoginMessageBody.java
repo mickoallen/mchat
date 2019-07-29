@@ -7,7 +7,7 @@ public class UserLoginMessageBody extends MessageBody {
     private String username;
     private String password;
 
-    protected UserLoginMessageBody() {
+    public UserLoginMessageBody() {
         super(MessageType.USER_LOGIN);
     }
 

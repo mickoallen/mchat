@@ -1,0 +1,5 @@
+{
+    "body": {
+        "messageType": "CONVERSATIONS_GET"
+    }
+}

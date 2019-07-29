@@ -2,7 +2,7 @@ package com.mick.mchat.websocket.model;
 
 import java.util.UUID;
 
-public class MessageInfo {
+public class MessageContext {
     private UUID userUuid;
     private long dateCreated;
 
@@ -10,7 +10,7 @@ public class MessageInfo {
         return userUuid;
     }
 
-    public MessageInfo setUserUuid(UUID userUuid) {
+    public MessageContext setUserUuid(UUID userUuid) {
         this.userUuid = userUuid;
         return this;
     }
@@ -19,14 +19,14 @@ public class MessageInfo {
         return dateCreated;
     }
 
-    public MessageInfo setDateCreated(long dateCreated) {
+    public MessageContext setDateCreated(long dateCreated) {
         this.dateCreated = dateCreated;
         return this;
     }
 
     @Override
     public String toString() {
-        return "MessageInfo{" +
+        return "MessageContext{" +
                 "userUuid=" + userUuid +
                 ", dateCreated=" + dateCreated +
                 '}';

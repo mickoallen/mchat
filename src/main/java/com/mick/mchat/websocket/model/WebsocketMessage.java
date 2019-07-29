@@ -4,15 +4,15 @@ package com.mick.mchat.websocket.model;
  * Base class for all websocket messages, lets do some polymorphic deserialization yehawww
  * */
 public class WebsocketMessage<T extends MessageBody> {
-    private MessageInfo info;
+    private MessageContext context;
     private T body;
 
-    public MessageInfo getInfo() {
-        return info;
+    public MessageContext getContext() {
+        return context;
     }
 
-    public WebsocketMessage<T> setInfo(MessageInfo info) {
-        this.info = info;
+    public WebsocketMessage<T> setContext(MessageContext context) {
+        this.context = context;
         return this;
     }
 

@@ -1,6 +1,6 @@
 package com.mick.mchat.error;
 
-public class MChatException extends Exception {
+public class MChatException extends RuntimeException {
     public MChatException() {
     }
 

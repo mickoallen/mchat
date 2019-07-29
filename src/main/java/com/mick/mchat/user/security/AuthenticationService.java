@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mick.mchat.error.AuthenticationFailedException;
+import com.mick.mchat.user.UserService;
 import com.mick.mchat.user.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +23,21 @@ public class AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
     public static final String COOKIE_NAME = "mchat-authentication";
 
+    private final UserService userService;
     private final Algorithm algorithm;
     private final JWTVerifier jwtVerifier;
 
     @Inject
-    public AuthenticationService() {
+    public AuthenticationService(UserService userService) {
+        this.userService = userService;
         algorithm = Algorithm.HMAC256("mick actually isn't cool");
         jwtVerifier = JWT.require(algorithm).build();
+    }
+
+    public String login(String username, String password){
+        User user = userService.getUserFromCredentials(username, password);
+
+        return createToken(user);
     }
 
     public String createToken(User user) {
@@ -36,7 +45,7 @@ public class AuthenticationService {
             return JWT.create()
                     .withIssuer("auth0")
                     .withClaim("userUuid", user.getUuid().toString())
-                    .withClaim("expiry", Instant.now().plus(1, ChronoUnit.YEARS).toEpochMilli())
+                    .withClaim("expiry", Instant.now().plus(365, ChronoUnit.DAYS).toEpochMilli())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
             throw new RuntimeException(exception);//todo

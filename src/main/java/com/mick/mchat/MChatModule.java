@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import com.mick.mchat.chat.ChatMessageHandler;
+import com.mick.mchat.conversation.ConversationsGetHandler;
 import com.mick.mchat.user.UserConnectedHandler;
 import com.mick.mchat.user.login.UserLoginHandler;
 import com.mick.mchat.websocket.MessageHandler;
@@ -26,7 +27,8 @@ public class MChatModule extends AbstractModule {
         List<Class<? extends MessageHandler>> messageHandlers = List.of(
                 ChatMessageHandler.class,
                 UserConnectedHandler.class,
-                UserLoginHandler.class
+                UserLoginHandler.class,
+                ConversationsGetHandler.class
         );
 
         Multibinder<MessageHandler> messageHandlerMultibinder = Multibinder.newSetBinder(binder(), MessageHandler.class);

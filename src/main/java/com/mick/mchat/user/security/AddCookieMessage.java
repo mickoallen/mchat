@@ -1,10 +1,15 @@
 package com.mick.mchat.user.security;
 
-import com.mick.mchat.websocket.model.WebsocketMessage;
+import com.mick.mchat.websocket.model.MessageBody;
+import com.mick.mchat.websocket.model.MessageType;
 
-public class AddCookieMessage extends WebsocketMessage {
+public class AddCookieMessage extends MessageBody {
     private String name;
     private String value;
+
+    public AddCookieMessage() {
+        super(MessageType.ADD_COOKIE);
+    }
 
     public String getName() {
         return name;

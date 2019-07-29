@@ -33,7 +33,7 @@ public class UserConnectedHandler implements MessageHandler<UserConnectedMessage
         //for now just notify everyone
         allWsContexts.forEach(currentConnections -> currentConnections.send(userConnectedMessage));
 
-        conversationRepository.addUserToConversation(websocketMessage.getInfo().getUserUuid());
+        conversationRepository.addUserToConversation(websocketMessage.getContext().getUserUuid());
     }
 
     @Override
