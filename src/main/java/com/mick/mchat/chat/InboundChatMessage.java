@@ -1,24 +1,24 @@
 package com.mick.mchat.chat;
 
-import com.mick.mchat.websocket.model.MessageBody;
-import com.mick.mchat.websocket.model.MessageType;
+import com.mick.mchat.websocket.inbound.InboundMessageType;
+import com.mick.mchat.websocket.inbound.InboundMessage;
 
 import java.util.UUID;
 
 
-public class ChatMessageBody extends MessageBody {
+public class InboundChatMessage extends InboundMessage {
     private UUID conversationUuid;
     private ChatMessageModel messageBody;
 
-    public ChatMessageBody() {
-        super(MessageType.CHAT_MESSAGE);
+    public InboundChatMessage() {
+        super(InboundMessageType.CHAT_MESSAGE);
     }
 
     public UUID getConversationUuid() {
         return conversationUuid;
     }
 
-    public ChatMessageBody setConversationUuid(UUID conversationUuid) {
+    public InboundChatMessage setConversationUuid(UUID conversationUuid) {
         this.conversationUuid = conversationUuid;
         return this;
     }
@@ -27,14 +27,14 @@ public class ChatMessageBody extends MessageBody {
         return messageBody;
     }
 
-    public ChatMessageBody setMessageBody(ChatMessageModel messageBody) {
+    public InboundChatMessage setMessageBody(ChatMessageModel messageBody) {
         this.messageBody = messageBody;
         return this;
     }
 
     @Override
     public String toString() {
-        return "ChatMessageBody{" +
+        return "InboundChatMessage{" +
                 "conversationUuid=" + conversationUuid +
                 ", messageBody=" + messageBody +
                 '}';

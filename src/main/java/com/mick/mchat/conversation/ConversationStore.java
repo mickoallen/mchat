@@ -40,6 +40,7 @@ public class ConversationStore {
 
     public Conversation createConversation(final List<UUID> participants){
         Conversation conversation = new Conversation()
+                .setUuid(UUID.randomUUID())
                 .setParticipants(participants);
 
         conversations.add(conversation);

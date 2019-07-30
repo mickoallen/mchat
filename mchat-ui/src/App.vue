@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import MChatMain from './components/MChatMain.vue'
+import MChatMain from './MChatMain.vue'
 
 export default {
   name: 'app',

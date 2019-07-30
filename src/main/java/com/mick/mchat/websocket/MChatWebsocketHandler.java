@@ -1,11 +1,9 @@
 package com.mick.mchat.websocket;
 
 import com.mick.mchat.error.AuthenticationFailedException;
-import com.mick.mchat.user.model.UserConnectedMessage;
 import com.mick.mchat.user.security.AuthenticationService;
 import com.mick.mchat.user.security.AuthenticationToken;
-import com.mick.mchat.websocket.model.MessageContext;
-import com.mick.mchat.websocket.model.WebsocketMessage;
+import com.mick.mchat.websocket.inbound.InboundMessage;
 import io.javalin.websocket.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -13,18 +11,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.time.Instant;
 import java.util.Optional;
 
 @Singleton
-public class WebsocketHandler implements WsConnectHandler, WsCloseHandler, WsErrorHandler, WsMessageHandler {
-    private static final Logger logger = LoggerFactory.getLogger(WebsocketHandler.class);
+public class MChatWebsocketHandler implements WsConnectHandler, WsCloseHandler, WsErrorHandler, WsMessageHandler {
+    private static final Logger logger = LoggerFactory.getLogger(MChatWebsocketHandler.class);
     private final WsContextStore wsContextStore;
     private final MessageDispatcher messageDispatcher;
     private final AuthenticationService authenticationService;
 
     @Inject
-    public WebsocketHandler(
+    public MChatWebsocketHandler(
             final WsContextStore wsContextStore,
             final MessageDispatcher messageDispatcher,
             final AuthenticationService authenticationService) {
@@ -44,12 +41,7 @@ public class WebsocketHandler implements WsConnectHandler, WsCloseHandler, WsErr
         }
 
         wsContextStore.addUserWsContext(authenticationToken.get().getUserUuid(), wsConnectContext);
-
-        WebsocketMessage<UserConnectedMessage> websocketMessage = new WebsocketMessage<>();
-        websocketMessage.setBody(new UserConnectedMessage());
-        websocketMessage.setContext(new MessageContext().setUserUuid(authenticationToken.get().getUserUuid()));
-
-        messageDispatcher.dispatchMessage(websocketMessage, wsConnectContext);
+        //todo
     }
 
     @Override
@@ -60,20 +52,13 @@ public class WebsocketHandler implements WsConnectHandler, WsCloseHandler, WsErr
 
     @Override
     public void handleMessage(@NotNull WsMessageContext wsMessageContext) throws Exception {
-        Optional<AuthenticationToken> authenticationTokenOptional = getValidAuthenticationToken(wsMessageContext);
+        InboundMessage websocketMessage = MessageCodec.deserialize(wsMessageContext.message());
 
-        AuthenticationToken authenticationToken = authenticationTokenOptional.orElseThrow(() -> new AuthenticationFailedException("User is not authenticated"));
-
-        WebsocketMessage websocketMessage = WebsocketMessageMapper.deserialize(wsMessageContext.message());
-
-        if (websocketMessage.getContext() == null) {
-            websocketMessage.setContext(
-                    new MessageContext()
-                            .setDateCreated(Instant.now().toEpochMilli())
-            );
+        if (websocketMessage.getType().isAuthenticationRequired()) {
+            Optional<AuthenticationToken> authenticationTokenOptional = getValidAuthenticationToken(wsMessageContext);
+            AuthenticationToken authenticationToken = authenticationTokenOptional.orElseThrow(() -> new AuthenticationFailedException("User is not authenticated"));
+            websocketMessage.setUserUuid(authenticationToken.getUserUuid());
         }
-
-        websocketMessage.getContext().setUserUuid(authenticationToken.getUserUuid());
 
         messageDispatcher.dispatchMessage(websocketMessage, wsMessageContext);
     }

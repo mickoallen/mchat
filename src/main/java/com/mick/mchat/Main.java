@@ -2,7 +2,7 @@ package com.mick.mchat;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.mick.mchat.websocket.WebsocketHandler;
+import com.mick.mchat.websocket.MChatWebsocketHandler;
 import io.javalin.Javalin;
 
 import static io.javalin.apibuilder.ApiBuilder.get;
@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         Injector guiceInjector = Guice.createInjector(new MChatModule());
 
-        WebsocketHandler mChatWsHandler = guiceInjector.getInstance(WebsocketHandler.class);
+        MChatWebsocketHandler mChatWsHandler = guiceInjector.getInstance(MChatWebsocketHandler.class);
 
         Javalin.create()
                 .ws("/ws", ws -> {

@@ -21,8 +21,8 @@
 
           <div class="modal-footer">
             <slot name="footer">
-              <button class="modal-default-button" @click="login">Login</button>
-              <button class="modal-default-button" @click="$emit('close')">Cancel</button>
+              <button class="modal-default-button" @click="requestLogin">Login</button>
+              <button class="modal-default-button" @click="close">Cancel</button>
             </slot>
           </div>
         </div>
@@ -33,6 +33,7 @@
 
 <script>
 import loginRequest from "../messages/login.json";
+import store from '../store/store.js';
 
 export default {
   data() {
@@ -41,29 +42,19 @@ export default {
       password: null
     };
   },
-  beforeMount() {
-    this.$socket.onmessage = message => this.handleMessage(message);
-  },
   methods: {
-    handleMessage(message) {
-        console.log("LOGIN_MODAL - MESSAGE RECEIVED : " + message);
-      var messageBody = JSON.parse(message.data);
-      if (messageBody.body.messageType === "ADD_COOKIE") {
-        console.log(
-          "Setting cookie: " +
-            messageBody.body.name +
-            " with value: " +
-            messageBody.body.value
-        );
-        this.$cookie.set(messageBody.body.name, messageBody.body.value, 356);
-      }
+    close(){
+      store.commit('updateModalState', {name:'showLogin', newState:false});
     },
-    login() {
+
+    requestLogin() {
       console.log("attempting login");
       loginRequest.body.username = this.username;
       loginRequest.body.password = this.password;
       this.$socket.sendObj(loginRequest);
     }
+    
   }
+  
 };
 </script>

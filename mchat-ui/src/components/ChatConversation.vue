@@ -2,8 +2,9 @@
   <div class="conversation">
       <p>{{ username }}</p>
       <div>
-          <textarea></textarea>
+          <textarea v-model="message"></textarea>
       </div>
+      <button class="modal-default-button" @click="sendMessage">Send message</button>
   </div>
 </template>
 
@@ -26,6 +27,7 @@ export default {
       sendingMessage: false,
       chatMessage: "",
       loggingOut: false,
+      message: "",
       groupMessages: [],
       loadingMessages: false
     };
@@ -36,7 +38,9 @@ export default {
     
   },
   methods: {
-    
+    sendMessage(){
+      this.$socket.sendObject()
+    }
   }
 };
 </script>

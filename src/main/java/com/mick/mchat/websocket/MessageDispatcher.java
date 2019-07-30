@@ -1,15 +1,15 @@
 package com.mick.mchat.websocket;
 
-import com.mick.mchat.error.MChatException;
-import com.mick.mchat.websocket.model.MessageType;
-import com.mick.mchat.websocket.model.WebsocketMessage;
+import com.mick.mchat.websocket.inbound.InboundMessage;
+import com.mick.mchat.websocket.inbound.InboundMessageHandlerRegistry;
+import com.mick.mchat.websocket.outbound.OutboundMessage;
 import io.javalin.websocket.WsContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Could use some in mem message broker instead. For this to scale to multiple nodes we'll need that.
@@ -18,22 +18,29 @@ import java.util.Map;
 public class MessageDispatcher {
     private final static Logger logger = LoggerFactory.getLogger(MessageDispatcher.class);
 
-    private final Map<MessageType, MessageHandler> messageHandlerMap;
+    private final InboundMessageHandlerRegistry inboundMessageHandlerRegistry;
 
     @Inject
-    public MessageDispatcher(Map<MessageType, MessageHandler> messageHandlerMap) {
-        this.messageHandlerMap = messageHandlerMap;
+    public MessageDispatcher(final InboundMessageHandlerRegistry inboundMessageHandlerRegistry) {
+        this.inboundMessageHandlerRegistry = inboundMessageHandlerRegistry;
     }
 
-    public void dispatchMessage(WebsocketMessage websocketMessage, WsContext wsContext) {
+    public void dispatchMessage(InboundMessage inboundMessage, WsContext wsContext) {
+        Optional<? extends OutboundMessage> outboundMessageOptional;
 
-        MessageHandler<?> messageHandler = messageHandlerMap.get(websocketMessage.getBody().getMessageType());
         try {
-            //noinspection unchecked
-            messageHandler.handleMessage(websocketMessage, wsContext);
-        } catch (MChatException e) {
-            logger.error("Exception handling message: {}", websocketMessage, e);
-            //todo - return some error to ui?
+            outboundMessageOptional = inboundMessageHandlerRegistry
+                    .getMessageHandler(inboundMessage.getType())
+                    .invoke(inboundMessage, wsContext);
+        } catch (Exception e) {
+            logger.error("Something went wrong invoking message handler for message: {}", inboundMessage, e);
+            return;
         }
+
+        if(outboundMessageOptional.isEmpty()){
+            return;
+        }
+
+        wsContext.send(MessageCodec.serialize(outboundMessageOptional.get()));
     }
 }
