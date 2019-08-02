@@ -1,7 +1,5 @@
 {
-    "body": {
-        "messageType": "USER_LOGIN",
-        "username": "",
-        "password": ""
-    }
+    "type": "USER_LOGIN",
+    "username": "",
+    "password": ""
 }

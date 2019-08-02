@@ -21,21 +21,25 @@ public class WsContextStore {
         this.userWsContexts = new ConcurrentHashMap<>();
     }
 
-    public List<WsContext> getWsContextForUsers(Collection<UUID> userUuids){
+    public List<WsContext> getWsContextForUsers(Collection<UUID> userUuids) {
         return userUuids.stream()
                 .map(userWsContexts::get)
                 .collect(Collectors.toList());
     }
 
-    public void addUserWsContext(UUID userUuid, WsContext wsContext){
+    public void addUserWsContext(UUID userUuid, WsContext wsContext) {
         userWsContexts.put(userUuid, wsContext);
     }
 
-    public void removeUserWsContext(UUID userUuid){
+    public void removeUserWsContext(UUID userUuid) {
         userWsContexts.remove(userUuid);
     }
 
     public Collection<WsContext> getAllWsContexts() {
         return userWsContexts.values();
+    }
+
+    public Map<UUID, WsContext> getContextMap() {
+        return userWsContexts;
     }
 }

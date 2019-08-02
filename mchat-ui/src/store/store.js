@@ -1,7 +1,13 @@
+import * as MESSAGE_TYPES from '../constants/inboundMessageTypes.js';
+
 import Vue from 'vue';
 import Vuex from 'vuex';
+import VueCookie from "vue-cookie";
+
+const AUTH_TOKEN_COOKIE_NAME = "mchat-authentication";
 
 Vue.use(Vuex);
+Vue.use(VueCookie);
 
 export default new Vuex.Store({
   state: {
@@ -11,11 +17,14 @@ export default new Vuex.Store({
       reconnectError: false,
     },
     currentUser: {
-      loggedIn: false
+      loggedIn: false,
+      username: "",
+      authenticationToken: ""
     },
     modals: {
       showLogin: false
     },
+    allChat: "",
     users: [],
     conversations: []
   },
@@ -23,6 +32,12 @@ export default new Vuex.Store({
     SOCKET_ONOPEN(state, event) {
       Vue.prototype.$socket = event.currentTarget;
       state.socket.isConnected = true;
+
+      //check if there is an existing auth token we can save
+      var authenticationToken = VueCookie.get(AUTH_TOKEN_COOKIE_NAME);
+      if (authenticationToken != undefined) {
+        state.currentUser.authenticationToken = authenticationToken;
+      }
     },
     SOCKET_ONCLOSE(state) {
       state.socket.isConnected = false;
@@ -31,17 +46,26 @@ export default new Vuex.Store({
       console.error(state, event);
     },
     SOCKET_ONMESSAGE(state, message) {
-      console.log("Store Message: " + message);
+      console.log("Received message: " + JSON.stringify(message));
 
-      if (message.messageType === "CONVERSATIONS_GET_RESPONSE") {
-        state.conversations = message.conversationList;
+      if (message.type == MESSAGE_TYPES.ERROR) {
+        console.error("Error from server: " + message.body.message);
+      }
+      else if (message.type == MESSAGE_TYPES.CONVERSATIONS_GET_ALL_RESPONSE) {
+        state.conversations = message.body.conversations;
 
-      } else if (message.messageType === "ADD_COOKIE") {
+      } else if (message.type == MESSAGE_TYPES.LOGIN_RESPONSE) {
         console.log("Login success!");
-        console.log(
-          "Setting cookie: " + message.name + " with value: " + message.value
-        );
-        this.$cookie.set(message.name, message.value, 356);
+        VueCookie.set(message.body.cookieName, message.body.authenticationToken, message.body.cookieExpiry);
+        state.modals.showLogin = false;
+        state.currentUser.authenticationToken = message.body.authenticationToken;
+
+      } else if (message.type == MESSAGE_TYPES.CHAT_MESSAGE) {
+        state.allChat = state.allChat + "\n" + message.body.message;
+
+      } else if (message.type == MESSAGE_TYPES.CURRENT_USER) {
+        state.currentUser.loggedIn = true;
+        state.currentUser.username = message.body.username;
       }
     },
     // mutations for reconnect methods
@@ -54,11 +78,38 @@ export default new Vuex.Store({
     updateModalState(state, namedModalState) {
       console.log("Modal: " + namedModalState.name + " is now " + namedModalState.newState);
       state.modals[namedModalState.name] = namedModalState.newState;
+    },
+    logout(state) {
+      console.log("logging out");
+      VueCookie.delete("mchat-authentication");
+      state.currentUser.loggedIn = false;
+      state.currentUser.authenticationToken = null;
     }
   },
   actions: {
-    sendMessage: function (context, message) {
-      Vue.prototype.$socket.send(message);
+    sendMessage: (context, message) => {
+      //add auth token to message
+      message.authenticationToken = context.state.currentUser.authenticationToken;
+      console.log("Sending message: " + JSON.stringify(message));
+      Vue.prototype.$socket.sendObj(message);
+    }
+  },
+  getters: {
+    getConversations: (state) => {
+      return state.conversations;
+    },
+    getLoginModalState: (state) => {
+      return state.modals.showLogin;
+    },
+    getAllChat: (state) => {
+      return state.allChat;
+    },
+    getCurrentUserInfo: (state) => {
+      return {
+        connected: state.socket.isConnected,
+        loggedIn: state.currentUser.loggedIn,
+        username: state.currentUser.username,
+      };
     }
   }
 });

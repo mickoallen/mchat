@@ -2,10 +2,8 @@ package com.mick.mchat;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.mick.mchat.websocket.MChatWebsocketHandler;
+import com.mick.mchat.websocket.inbound.MChatWebsocketHandler;
 import io.javalin.Javalin;
-
-import static io.javalin.apibuilder.ApiBuilder.get;
 
 /**
  * Run this to start it, obviously.
@@ -15,17 +13,16 @@ public class Main {
         Injector guiceInjector = Guice.createInjector(new MChatModule());
 
         MChatWebsocketHandler mChatWsHandler = guiceInjector.getInstance(MChatWebsocketHandler.class);
-
+        HealthHandler healthHandler = guiceInjector.getInstance(HealthHandler.class);
         Javalin.create()
                 .ws("/ws", ws -> {
                     ws.onConnect(mChatWsHandler);
                     ws.onClose(mChatWsHandler);
                     ws.onError(mChatWsHandler);
                     ws.onMessage(mChatWsHandler);
-                }).routes(() ->
-                get("/health", (context) -> {
-                    context.result("Your mom is good").status(200);
                 })
-        ).start(7070);
+                .get("/health/users", context -> context.result(healthHandler.getConnectedUsers()).status(200))
+                .get("/health", context -> context.result(healthHandler.getHealth()).status(200))
+                .start(7070);
     }
 }

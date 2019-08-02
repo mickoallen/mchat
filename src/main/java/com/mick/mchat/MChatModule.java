@@ -2,12 +2,12 @@ package com.mick.mchat;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
-import com.mick.mchat.conversation.ConversationMessageHandler;
-import com.mick.mchat.user.UserConnectedHandlerInbound;
-import com.mick.mchat.user.UserMessageHandler;
-import com.mick.mchat.websocket.inbound.InboundMessageHandler;
+import com.mick.mchat.handlers.chat.in.ChatMessageHandler;
+import com.mick.mchat.handlers.conversation.in.ConversationMessageHandler;
+import com.mick.mchat.handlers.user.in.UserMessageHandler;
+import com.mick.mchat.websocket.inbound.InMessageHandler;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Magic, bitches.
@@ -17,13 +17,13 @@ public class MChatModule extends AbstractModule {
     @Override
     protected void configure() {
         /* Register all the message handlers here */
-        List<Class<? extends InboundMessageHandler>> messageHandlers = List.of(
-                UserConnectedHandlerInbound.class,
+        Set<Class<? extends InMessageHandler>> messageHandlers = Set.of(
                 UserMessageHandler.class,
-                ConversationMessageHandler.class
+                ConversationMessageHandler.class,
+                ChatMessageHandler.class
         );
 
-        Multibinder<InboundMessageHandler> messageHandlerMultibinder = Multibinder.newSetBinder(binder(), InboundMessageHandler.class);
+        Multibinder<InMessageHandler> messageHandlerMultibinder = Multibinder.newSetBinder(binder(), InMessageHandler.class);
 
         messageHandlers.forEach(messageHandler -> messageHandlerMultibinder.addBinding().to(messageHandler));
     }

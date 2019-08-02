@@ -21,7 +21,7 @@
                 const ws = new WebSocket(`ws://localhost:7070/api/ws/`);
                 textArea.onkeyup = () => ws.send(textArea.value);
                 ws.onmessage = msg => {
-                    const offset = msg.data.length - textArea.value.length;
+                    const messageOffset = msg.data.length - textArea.value.length;
                     const selection = {start: textArea.selectionStart, end: textArea.selectionEnd};
                     const startsSame = msg.data.startsWith(textArea.value.substring(0, selection.end));
                     const endsSame = msg.data.endsWith(textArea.value.substring(selection.start));
@@ -29,9 +29,9 @@
                     if (startsSame && !endsSame) {
                         textArea.setSelectionRange(selection.start, selection.end);
                     } else if (!startsSame && endsSame) {
-                        textArea.setSelectionRange(selection.start + offset, selection.end + offset);
+                        textArea.setSelectionRange(selection.start + messageOffset, selection.end + messageOffset);
                     } else { // this is what google docs does...
-                        textArea.setSelectionRange(selection.start, selection.end + offset);
+                        textArea.setSelectionRange(selection.start, selection.end + messageOffset);
                     }
                 };
                 ws.onclose = setupWebSocket; // should reconnect if connection is closed
