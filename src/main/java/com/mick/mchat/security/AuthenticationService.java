@@ -7,7 +7,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mick.mchat.error.AuthenticationFailedException;
-import com.mick.mchat.handlers.user.User;
+import com.mick.mchat.jooq.model.tables.pojos.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

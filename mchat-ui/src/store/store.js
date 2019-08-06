@@ -22,7 +22,8 @@ export default new Vuex.Store({
       authenticationToken: ""
     },
     modals: {
-      showLogin: false
+      showLogin: false,
+      createAccount: false
     },
     allChat: "",
     users: [],
@@ -57,8 +58,8 @@ export default new Vuex.Store({
       } else if (message.type == MESSAGE_TYPES.LOGIN_RESPONSE) {
         console.log("Login success!");
         VueCookie.set(message.body.cookieName, message.body.authenticationToken, message.body.cookieExpiry);
-        state.modals.showLogin = false;
         state.currentUser.authenticationToken = message.body.authenticationToken;
+        state.currentUser.loggedIn = true;
 
       } else if (message.type == MESSAGE_TYPES.CHAT_MESSAGE) {
         state.allChat = state.allChat + "\n" + message.body.message;
@@ -110,6 +111,12 @@ export default new Vuex.Store({
         loggedIn: state.currentUser.loggedIn,
         username: state.currentUser.username,
       };
+    },
+    getIsLoggedIn: (state) => {
+      return state.currentUser.loggedIn;
+    },
+    getCreateAccountModalState: (state) => {
+      return state.modals.createAccount;
     }
   }
 });

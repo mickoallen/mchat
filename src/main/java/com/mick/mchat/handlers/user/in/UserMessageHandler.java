@@ -4,6 +4,7 @@ import com.mick.mchat.handlers.user.UserMapper;
 import com.mick.mchat.handlers.user.UserService;
 import com.mick.mchat.handlers.user.out.LoginResponseOut;
 import com.mick.mchat.handlers.user.out.UserOut;
+import com.mick.mchat.jooq.model.tables.pojos.User;
 import com.mick.mchat.security.AuthenticationToken;
 import com.mick.mchat.websocket.inbound.InMessageHandler;
 import com.mick.mchat.websocket.inbound.InMessageType;
@@ -42,6 +43,24 @@ public class UserMessageHandler implements InMessageHandler {
     public UserOut getActiveUser(CurrentUserGetIn currentUserGetIn, AuthenticationToken authenticationToken) {
         return UserMapper.toOut(
                 userService.getUser(authenticationToken.getUserUuid())
+        );
+    }
+
+    @MChatMessageHandler(
+            inType = InMessageType.CREATE_USER,
+            outType = OutMessageType.LOGIN_RESPONSE
+    )
+    public LoginResponseOut createUserAndLogin(CreateUserIn createUserIn) {
+        User user = new User();
+        user.setUsername(createUserIn.getUsername());
+        user.setPassword(createUserIn.getPassword());
+
+        userService.createUser(user);
+
+        return login(
+                new UserLoginIn()
+                        .setUsername(createUserIn.getUsername())
+                        .setPassword(createUserIn.getPassword())
         );
     }
 }

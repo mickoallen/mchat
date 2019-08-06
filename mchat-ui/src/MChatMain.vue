@@ -1,29 +1,42 @@
 <template>
-    <div>
+    <v-app id="inspire">
+        <v-app-bar app clipped-left>
+            <v-app-bar-nav-icon></v-app-bar-nav-icon>
+            <v-toolbar-title>MChat</v-toolbar-title>
+            <v-btn>Logout</v-btn>
+        </v-app-bar>
+        
         <div class="left-nav">
             <conversations />
         </div>
-        <button id="show-modal" @click="showLoginModal">Login</button>
-        <!-- use the modal component, pass in the prop -->
-        <login-modal ref="loginModal" v-if="isShowLogin"></login-modal>
-        <chat-conversation />
-        <current-user-status />
-    </div>
+
+        <landing-page v-if="!isLoggedIn"></landing-page>
+
+        <v-footer app>
+            <span class="white--text">- MChat 2019 -</span>
+        </v-footer>
+    </v-app>
 </template>
+
 
 <script>
 import Vue from "vue";
 import Vuex from "vuex";
 import "es6-promise/auto";
 import VueNativeSock from "vue-native-websocket";
-import Toasted from 'vue-toasted';
+
+import {
+    VApp,
+    VAppBar,
+    VAppBarNavIcon,
+    VToolbarTitle,
+    VBtn,
+    VFooter
+} from "vuetify/lib";
 
 import store from "./store/store.js";
-
-import ChatConversation from "./components/ChatConversation";
+import LandingPage from "./components/LandingPage";
 import Conversations from "./components/Conversations";
-import LoginModal from "./components/LoginModal";
-import CurrentUserStatus from "./components/CurrentUserStatus";
 
 Vue.use(VueNativeSock, "ws://localhost:7070/ws", {
     format: "json",
@@ -31,40 +44,41 @@ Vue.use(VueNativeSock, "ws://localhost:7070/ws", {
     store: store
 });
 Vue.use(Vuex);
-Vue.use(Toasted)
 
 export default {
     name: "MChatMain",
     components: {
-        "conversations": Conversations,
-        "chat-conversation": ChatConversation,
-        "login-modal": LoginModal,
-        "current-user-status": CurrentUserStatus
+        VApp,
+        VAppBar,
+        VAppBarNavIcon,
+        VToolbarTitle,
+        VBtn,
+        VFooter,
+        LandingPage,
+        conversations: Conversations,
     },
 
     computed: {
-        isShowLogin() {
-            return store.getters.getLoginModalState;
+        isLoggedIn() {
+            return store.getters.getIsLoggedIn;
         }
     },
 
     data() {
         return {
+            drawer: true,
+            source: "yourmom",
+            right: true
         };
     },
 
-    created() {},
+    created() {
+        this.$vuetify.theme.dark = true;
+    },
 
     beforeMount() {},
 
-    methods: {
-        showLoginModal() {
-            store.commit("updateModalState", {
-                name: "showLogin",
-                newState: true
-            });
-        }
-    }
+    methods: {}
 };
 </script>
 

@@ -1,5 +1,6 @@
-package com.mick.mchat.handlers.chat.in;
+package com.mick.mchat.handlers.chat;
 
+import com.mick.mchat.handlers.chat.in.ChatMessageIn;
 import com.mick.mchat.handlers.chat.out.ChatMessageOut;
 import com.mick.mchat.security.AuthenticationToken;
 import com.mick.mchat.websocket.WsContextStore;
