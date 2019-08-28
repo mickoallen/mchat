@@ -4,8 +4,6 @@
 package com.mick.mchat.jooq.model.tables.daos;
 
 
-import com.mick.mchat.jooq.model.enums.ConversationStatus;
-import com.mick.mchat.jooq.model.enums.ConversationType;
 import com.mick.mchat.jooq.model.tables.Conversation;
 import com.mick.mchat.jooq.model.tables.records.ConversationRecord;
 
@@ -78,14 +76,14 @@ public class ConversationDao extends DAOImpl<ConversationRecord, com.mick.mchat.
     /**
      * Fetch records that have <code>status IN (values)</code>
      */
-    public List<com.mick.mchat.jooq.model.tables.pojos.Conversation> fetchByStatus(ConversationStatus... values) {
+    public List<com.mick.mchat.jooq.model.tables.pojos.Conversation> fetchByStatus(String... values) {
         return fetch(Conversation.CONVERSATION.STATUS, values);
     }
 
     /**
      * Fetch records that have <code>type IN (values)</code>
      */
-    public List<com.mick.mchat.jooq.model.tables.pojos.Conversation> fetchByType(ConversationType... values) {
+    public List<com.mick.mchat.jooq.model.tables.pojos.Conversation> fetchByType(String... values) {
         return fetch(Conversation.CONVERSATION.TYPE, values);
     }
 

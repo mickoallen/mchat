@@ -3,7 +3,9 @@ package com.mick.mchat;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mick.mchat.websocket.inbound.MChatWebsocketHandler;
+import com.typesafe.config.Config;
 import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
 
 /**
  * Run this to start it, obviously.
@@ -14,7 +16,9 @@ public class Main {
 
         MChatWebsocketHandler mChatWsHandler = guiceInjector.getInstance(MChatWebsocketHandler.class);
         HealthHandler healthHandler = guiceInjector.getInstance(HealthHandler.class);
-        Javalin.create()
+        Config typesafeConfig = guiceInjector.getInstance(Config.class);
+
+        Javalin.create(config -> config.addStaticFiles(typesafeConfig.getString("static.files.location"), Location.EXTERNAL))
                 .ws("/ws", ws -> {
                     ws.onConnect(mChatWsHandler);
                     ws.onClose(mChatWsHandler);

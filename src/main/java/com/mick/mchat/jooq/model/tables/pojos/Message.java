@@ -4,8 +4,6 @@
 package com.mick.mchat.jooq.model.tables.pojos;
 
 
-import com.mick.mchat.jooq.model.enums.MessageType;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -26,37 +24,37 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Message implements Serializable {
 
-    private static final long serialVersionUID = 2003037015;
+    private static final long serialVersionUID = 673143586;
 
-    private UUID        uuid;
-    private UUID        userUuid;
-    private UUID        conversationUuid;
-    private MessageType type;
-    private String      body;
-    private Timestamp   dateCreated;
+    private UUID      uuid;
+    private UUID      conversationUuid;
+    private UUID      userUuid;
+    private String    type;
+    private String    body;
+    private Timestamp dateCreated;
 
     public Message() {}
 
     public Message(Message value) {
         this.uuid = value.uuid;
-        this.userUuid = value.userUuid;
         this.conversationUuid = value.conversationUuid;
+        this.userUuid = value.userUuid;
         this.type = value.type;
         this.body = value.body;
         this.dateCreated = value.dateCreated;
     }
 
     public Message(
-        UUID        uuid,
-        UUID        userUuid,
-        UUID        conversationUuid,
-        MessageType type,
-        String      body,
-        Timestamp   dateCreated
+        UUID      uuid,
+        UUID      conversationUuid,
+        UUID      userUuid,
+        String    type,
+        String    body,
+        Timestamp dateCreated
     ) {
         this.uuid = uuid;
-        this.userUuid = userUuid;
         this.conversationUuid = conversationUuid;
+        this.userUuid = userUuid;
         this.type = type;
         this.body = body;
         this.dateCreated = dateCreated;
@@ -70,14 +68,6 @@ public class Message implements Serializable {
         this.uuid = uuid;
     }
 
-    public UUID getUserUuid() {
-        return this.userUuid;
-    }
-
-    public void setUserUuid(UUID userUuid) {
-        this.userUuid = userUuid;
-    }
-
     public UUID getConversationUuid() {
         return this.conversationUuid;
     }
@@ -86,11 +76,19 @@ public class Message implements Serializable {
         this.conversationUuid = conversationUuid;
     }
 
-    public MessageType getType() {
+    public UUID getUserUuid() {
+        return this.userUuid;
+    }
+
+    public void setUserUuid(UUID userUuid) {
+        this.userUuid = userUuid;
+    }
+
+    public String getType() {
         return this.type;
     }
 
-    public void setType(MessageType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -111,12 +109,73 @@ public class Message implements Serializable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Message other = (Message) obj;
+        if (uuid == null) {
+            if (other.uuid != null)
+                return false;
+        }
+        else if (!uuid.equals(other.uuid))
+            return false;
+        if (conversationUuid == null) {
+            if (other.conversationUuid != null)
+                return false;
+        }
+        else if (!conversationUuid.equals(other.conversationUuid))
+            return false;
+        if (userUuid == null) {
+            if (other.userUuid != null)
+                return false;
+        }
+        else if (!userUuid.equals(other.userUuid))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        }
+        else if (!type.equals(other.type))
+            return false;
+        if (body == null) {
+            if (other.body != null)
+                return false;
+        }
+        else if (!body.equals(other.body))
+            return false;
+        if (dateCreated == null) {
+            if (other.dateCreated != null)
+                return false;
+        }
+        else if (!dateCreated.equals(other.dateCreated))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.uuid == null) ? 0 : this.uuid.hashCode());
+        result = prime * result + ((this.conversationUuid == null) ? 0 : this.conversationUuid.hashCode());
+        result = prime * result + ((this.userUuid == null) ? 0 : this.userUuid.hashCode());
+        result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
+        result = prime * result + ((this.body == null) ? 0 : this.body.hashCode());
+        result = prime * result + ((this.dateCreated == null) ? 0 : this.dateCreated.hashCode());
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Message (");
 
         sb.append(uuid);
-        sb.append(", ").append(userUuid);
         sb.append(", ").append(conversationUuid);
+        sb.append(", ").append(userUuid);
         sb.append(", ").append(type);
         sb.append(", ").append(body);
         sb.append(", ").append(dateCreated);

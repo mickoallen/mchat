@@ -1,27 +1,58 @@
 <template>
-    <v-content>
-        <v-card>
+    <div class="landing">
+        <v-content>
             <v-container fluid fill-height>
-                <v-layout align-center justify-center>
-                    <v-flex text-center>
-                        <v-form v-if="!createAccountOptions" ref="form" v-model="valid" :lazy-validation="false">
-                            <v-text-field v-model="username" label="Username" required></v-text-field>
-                            <v-text-field v-model="passwordOne" label="Password" required></v-text-field>
-                            <v-btn @click.stop="login">Login</v-btn>
-                            <v-btn @click.stop="createAccountOptions = !createAccountOptions">Need to create an account?</v-btn>
-                        </v-form>
-                        <v-form v-if="createAccountOptions" ref="form" v-model="valid" :lazy-validation="false">
-                            <v-text-field v-model="username" label="Username" required></v-text-field>
-                            <v-text-field v-model="passwordOne" label="Password" required></v-text-field>
-                            <v-text-field v-model="passwordTwo" label="Re-enter Password" required></v-text-field>
-                            <v-btn @click.stop="createAccountOptions = !createAccountOptions">Back to login</v-btn>
-                            <v-btn @click.stop="createAccount">Create account</v-btn>
-                        </v-form>
+                <v-layout grid align-center justify-center>
+                    <v-flex xs12 sm8 md4>
+                        <v-card class="elevation-10">
+                            <v-form
+                                v-if="!createAccountOptions"
+                                ref="form"
+                                v-model="valid"
+                                :lazy-validation="false"
+                            >
+                                <v-text-field v-model="username" label="Username" required></v-text-field>
+                                <v-text-field
+                                    v-model="passwordOne"
+                                    :type="'password'"
+                                    label="Password"
+                                    required
+                                ></v-text-field>
+                                <v-btn @click.stop="login">Login</v-btn>
+                                <v-btn
+                                    @click.stop="createAccountOptions = !createAccountOptions"
+                                >Need to create an account?</v-btn>
+                            </v-form>
+                            <v-form
+                                v-if="createAccountOptions"
+                                ref="form"
+                                v-model="valid"
+                                :lazy-validation="false"
+                            >
+                                <v-text-field v-model="username" label="Username" required></v-text-field>
+                                <v-text-field
+                                    v-model="passwordOne"
+                                    :type="'password'"
+                                    label="Password"
+                                    required
+                                ></v-text-field>
+                                <v-text-field
+                                    v-model="passwordTwo"
+                                    label="Re-enter Password"
+                                    :type="'password'"
+                                    required
+                                ></v-text-field>
+                                <v-btn
+                                    @click.stop="createAccountOptions = !createAccountOptions"
+                                >Back to login</v-btn>
+                                <v-btn right @click.stop="createAccount">Create account</v-btn>
+                            </v-form>
+                        </v-card>
                     </v-flex>
                 </v-layout>
             </v-container>
-        </v-card>
-    </v-content>
+        </v-content>
+    </div>
 </template>
 
 <script>
@@ -37,8 +68,8 @@ import {
     VFlex,
     VForm,
     VTextField,
-    VCard,
-    VBtn
+    VBtn,
+    VCard
 } from "vuetify/lib";
 
 export default {
@@ -49,8 +80,8 @@ export default {
         VFlex,
         VForm,
         VTextField,
-        VCard,
-        VBtn
+        VBtn,
+        VCard
     },
 
     data() {
@@ -78,16 +109,16 @@ export default {
             console.log("attempting login");
             loginRequest.username = this.username;
             loginRequest.password = this.passwordOne;
-            store.dispatch('sendMessage', loginRequest);
+            store.dispatch("sendMessage", loginRequest);
         },
         loadConversations() {
             this.$socket.sendObj(conversationsGet);
         },
-        createAccount(){
+        createAccount() {
             console.log("creating account");
             createAccount.username = this.username;
             createAccount.password = this.passwordOne;
-            store.dispatch('sendMessage', createAccount);
+            store.dispatch("sendMessage", createAccount);
         }
     }
 };

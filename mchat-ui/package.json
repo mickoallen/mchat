@@ -14,6 +14,7 @@
     "sass-loader": "^7.1.0",
     "vue": "^2.6.10",
     "vue-cookie": "^1.1.4",
+    "vue-lodash": "^2.0.2",
     "vue-native-websocket": "^2.0.13",
     "vue-toasted": "^1.1.27",
     "vuetify": "^2.0.4",

@@ -1,14 +1,14 @@
 package com.mick.mchat.handlers.chat.out;
 
-import com.mick.mchat.jooq.model.enums.MessageType;
 import com.mick.mchat.websocket.outbound.OutMessage;
 
 import java.util.UUID;
 
 public class ChatMessageOut implements OutMessage {
     private UUID userUuid;
+    private UUID conversationUuid;
     private String message;
-    private MessageType type;
+    private String type;
     private long dateCreated;
 
     public String getMessage() {
@@ -38,12 +38,21 @@ public class ChatMessageOut implements OutMessage {
         return this;
     }
 
-    public MessageType getType() {
+    public String getType() {
         return type;
     }
 
-    public ChatMessageOut setType(MessageType type) {
+    public ChatMessageOut setType(String type) {
         this.type = type;
+        return this;
+    }
+
+    public UUID getConversationUuid() {
+        return conversationUuid;
+    }
+
+    public ChatMessageOut setConversationUuid(UUID conversationUuid) {
+        this.conversationUuid = conversationUuid;
         return this;
     }
 }

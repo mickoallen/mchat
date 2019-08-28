@@ -24,7 +24,7 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User implements Serializable {
 
-    private static final long serialVersionUID = -1820520649;
+    private static final long serialVersionUID = 535036889;
 
     private UUID      uuid;
     private String    username;
@@ -94,6 +94,60 @@ public class User implements Serializable {
 
     public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final User other = (User) obj;
+        if (uuid == null) {
+            if (other.uuid != null)
+                return false;
+        }
+        else if (!uuid.equals(other.uuid))
+            return false;
+        if (username == null) {
+            if (other.username != null)
+                return false;
+        }
+        else if (!username.equals(other.username))
+            return false;
+        if (password == null) {
+            if (other.password != null)
+                return false;
+        }
+        else if (!password.equals(other.password))
+            return false;
+        if (avatarUrl == null) {
+            if (other.avatarUrl != null)
+                return false;
+        }
+        else if (!avatarUrl.equals(other.avatarUrl))
+            return false;
+        if (dateCreated == null) {
+            if (other.dateCreated != null)
+                return false;
+        }
+        else if (!dateCreated.equals(other.dateCreated))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.uuid == null) ? 0 : this.uuid.hashCode());
+        result = prime * result + ((this.username == null) ? 0 : this.username.hashCode());
+        result = prime * result + ((this.password == null) ? 0 : this.password.hashCode());
+        result = prime * result + ((this.avatarUrl == null) ? 0 : this.avatarUrl.hashCode());
+        result = prime * result + ((this.dateCreated == null) ? 0 : this.dateCreated.hashCode());
+        return result;
     }
 
     @Override

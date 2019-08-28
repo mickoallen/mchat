@@ -3,10 +3,7 @@ package com.mick.mchat.websocket.inbound;
 import com.mick.mchat.handlers.chat.in.ChatMessageIn;
 import com.mick.mchat.handlers.conversation.in.CreateConversationIn;
 import com.mick.mchat.handlers.conversation.in.ConversationGetIn;
-import com.mick.mchat.handlers.user.in.CreateUserIn;
-import com.mick.mchat.handlers.user.in.CurrentUserGetIn;
-import com.mick.mchat.handlers.user.in.UserConnectedIn;
-import com.mick.mchat.handlers.user.in.UserLoginIn;
+import com.mick.mchat.handlers.user.in.*;
 
 public enum InMessageType {
     NONE,
@@ -16,7 +13,8 @@ public enum InMessageType {
     USER_CONNECTED(UserConnectedIn.class),
     CURRENT_USER_GET(CurrentUserGetIn.class),
     CREATE_CONVERSATION(CreateConversationIn.class),
-    CREATE_USER(CreateUserIn.class, false);
+    CREATE_USER(CreateUserIn.class, false),
+    USERS_GET_ALL(GetAllUsersIn.class);
 
     private boolean authenticationRequired = true;
     private Class<? extends InMessage> clazz;

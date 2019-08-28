@@ -1,14 +1,14 @@
 <template>
-    <v-app id="inspire">
-        <v-app-bar app clipped-left>
-            <v-app-bar-nav-icon></v-app-bar-nav-icon>
+    <v-app>
+        <v-app-bar app clipped-left v-if="isLoggedIn">
+            <v-app-bar-nav-icon @click.stop="changeShowConversations"></v-app-bar-nav-icon>
             <v-toolbar-title>MChat</v-toolbar-title>
-            <v-btn>Logout</v-btn>
+            <v-btn @click.stop="logout"> Logout</v-btn>
+            <v-btn @click.stop="changeTheme"> Theme</v-btn>
+            <current-user-status />
         </v-app-bar>
         
-        <div class="left-nav">
-            <conversations />
-        </div>
+        <conversations v-if="isLoggedIn" />
 
         <landing-page v-if="!isLoggedIn"></landing-page>
 
@@ -22,6 +22,7 @@
 <script>
 import Vue from "vue";
 import Vuex from "vuex";
+import { mapState } from "vuex";
 import "es6-promise/auto";
 import VueNativeSock from "vue-native-websocket";
 
@@ -37,6 +38,7 @@ import {
 import store from "./store/store.js";
 import LandingPage from "./components/LandingPage";
 import Conversations from "./components/Conversations";
+import CurrentUserStatus from "./components/CurrentUserStatus";
 
 Vue.use(VueNativeSock, "ws://localhost:7070/ws", {
     format: "json",
@@ -55,30 +57,36 @@ export default {
         VBtn,
         VFooter,
         LandingPage,
-        conversations: Conversations,
+        Conversations,
+        CurrentUserStatus
     },
 
     computed: {
-        isLoggedIn() {
-            return store.getters.getIsLoggedIn;
-        }
+        ...mapState({
+            isLoggedIn: state => state.currentUser.loggedIn,
+            showConversations: state => state.showConversations
+        })
     },
 
-    data() {
-        return {
-            drawer: true,
-            source: "yourmom",
-            right: true
-        };
-    },
-
-    created() {
-        this.$vuetify.theme.dark = true;
-    },
-
+data(){
+    return {
+        darkMode: false
+    }
+},
     beforeMount() {},
 
-    methods: {}
+    methods: {
+        logout(){
+            store.commit('logout');
+        },
+        changeShowConversations(){
+            store.dispatch("setShowConversations", !this.showConversations);
+        },
+        changeTheme(){
+            this.darkMode = !this.darkMode;
+            this.$vuetify.theme.dark = this.darkMode;
+        }
+    }
 };
 </script>
 

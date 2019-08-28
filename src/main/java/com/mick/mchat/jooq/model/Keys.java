@@ -21,7 +21,7 @@ import org.jooq.impl.Internal;
 
 /**
  * A class modelling foreign key relationships and constraints of tables of 
- * the <code>mchat</code> schema.
+ * the <code>public</code> schema.
  */
 @Generated(
     value = {
@@ -42,10 +42,10 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<ConversationRecord> KEY_CONVERSATION_PRIMARY = UniqueKeys0.KEY_CONVERSATION_PRIMARY;
-    public static final UniqueKey<MessageRecord> KEY_MESSAGE_PRIMARY = UniqueKeys0.KEY_MESSAGE_PRIMARY;
-    public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = UniqueKeys0.KEY_USER_PRIMARY;
-    public static final UniqueKey<UserConversationRecord> KEY_USER_CONVERSATION_PRIMARY = UniqueKeys0.KEY_USER_CONVERSATION_PRIMARY;
+    public static final UniqueKey<ConversationRecord> CONVERSATION_PKEY = UniqueKeys0.CONVERSATION_PKEY;
+    public static final UniqueKey<MessageRecord> MESSAGE_PKEY = UniqueKeys0.MESSAGE_PKEY;
+    public static final UniqueKey<UserRecord> USER_PKEY = UniqueKeys0.USER_PKEY;
+    public static final UniqueKey<UserConversationRecord> USER_CONVERSATION_PKEY = UniqueKeys0.USER_CONVERSATION_PKEY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -57,9 +57,9 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     private static class UniqueKeys0 {
-        public static final UniqueKey<ConversationRecord> KEY_CONVERSATION_PRIMARY = Internal.createUniqueKey(Conversation.CONVERSATION, "KEY_conversation_PRIMARY", Conversation.CONVERSATION.UUID);
-        public static final UniqueKey<MessageRecord> KEY_MESSAGE_PRIMARY = Internal.createUniqueKey(Message.MESSAGE, "KEY_message_PRIMARY", Message.MESSAGE.UUID);
-        public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = Internal.createUniqueKey(User.USER, "KEY_user_PRIMARY", User.USER.UUID);
-        public static final UniqueKey<UserConversationRecord> KEY_USER_CONVERSATION_PRIMARY = Internal.createUniqueKey(UserConversation.USER_CONVERSATION, "KEY_user_conversation_PRIMARY", UserConversation.USER_CONVERSATION.UUID);
+        public static final UniqueKey<ConversationRecord> CONVERSATION_PKEY = Internal.createUniqueKey(Conversation.CONVERSATION, "conversation_pkey", Conversation.CONVERSATION.UUID);
+        public static final UniqueKey<MessageRecord> MESSAGE_PKEY = Internal.createUniqueKey(Message.MESSAGE, "message_pkey", Message.MESSAGE.UUID);
+        public static final UniqueKey<UserRecord> USER_PKEY = Internal.createUniqueKey(User.USER, "user_pkey", User.USER.UUID);
+        public static final UniqueKey<UserConversationRecord> USER_CONVERSATION_PKEY = Internal.createUniqueKey(UserConversation.USER_CONVERSATION, "user_conversation_pkey", UserConversation.USER_CONVERSATION.UUID);
     }
 }

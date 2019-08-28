@@ -9,6 +9,7 @@ public class ChatMessageMapper {
                 .setMessage(message.getBody())
                 .setDateCreated(message.getDateCreated().getTime())
                 .setType(message.getType())
-                .setUserUuid(message.getUserUuid());
+                .setUserUuid(message.getUserUuid())
+                .setConversationUuid(message.getConversationUuid());
     }
 }

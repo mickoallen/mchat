@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class CreateConversationIn implements InMessage {
     private List<UUID> users;
+    private String name;
 
     public List<UUID> getUsers() {
         return users;
@@ -14,6 +15,15 @@ public class CreateConversationIn implements InMessage {
 
     public CreateConversationIn setUsers(List<UUID> users) {
         this.users = users;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public CreateConversationIn setName(String name) {
+        this.name = name;
         return this;
     }
 }

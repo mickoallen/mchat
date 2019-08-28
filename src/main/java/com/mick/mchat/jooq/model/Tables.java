@@ -13,7 +13,7 @@ import javax.annotation.Generated;
 
 
 /**
- * Convenience access to all tables in mchat
+ * Convenience access to all tables in public
  */
 @Generated(
     value = {
@@ -26,22 +26,22 @@ import javax.annotation.Generated;
 public class Tables {
 
     /**
-     * The table <code>mchat.conversation</code>.
+     * The table <code>public.conversation</code>.
      */
     public static final Conversation CONVERSATION = com.mick.mchat.jooq.model.tables.Conversation.CONVERSATION;
 
     /**
-     * The table <code>mchat.message</code>.
+     * The table <code>public.message</code>.
      */
     public static final Message MESSAGE = com.mick.mchat.jooq.model.tables.Message.MESSAGE;
 
     /**
-     * The table <code>mchat.user</code>.
+     * The table <code>public.user</code>.
      */
     public static final User USER = com.mick.mchat.jooq.model.tables.User.USER;
 
     /**
-     * The table <code>mchat.user_conversation</code>.
+     * The table <code>public.user_conversation</code>.
      */
     public static final UserConversation USER_CONVERSATION = com.mick.mchat.jooq.model.tables.UserConversation.USER_CONVERSATION;
 }

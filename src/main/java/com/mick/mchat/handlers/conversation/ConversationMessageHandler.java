@@ -40,8 +40,16 @@ public class ConversationMessageHandler implements InMessageHandler {
             outType = OutMessageType.CONVERSATIONS_GET_ALL_RESPONSE
     )
     public ConversationsOut createConversation(CreateConversationIn createConversationIn, AuthenticationToken authenticationToken) {
-        createConversationIn.getUsers().add(authenticationToken.getUserUuid());//add requesting user to conversation
-        conversationService.createConversationForUsers(createConversationIn.getUsers());
+        //add current user to conversation
+        createConversationIn.getUsers()
+                .add(authenticationToken.getUserUuid());
+        //add the requested users to the conversation
+        createConversationIn.getUsers().addAll(createConversationIn.getUsers());
+
+        Conversation conversation = new Conversation();
+        conversation.setName(createConversationIn.getName());
+
+        conversationService.createConversationForUsers(conversation, createConversationIn.getUsers());
 
         //todo send notification to other users!
         return getAllConversationsForUser(new ConversationGetIn(), authenticationToken);

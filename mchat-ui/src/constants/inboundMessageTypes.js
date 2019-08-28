@@ -3,3 +3,4 @@ export const LOGIN_RESPONSE = 'LOGIN_RESPONSE';
 export const CHAT_MESSAGE = 'CHAT_MESSAGE';
 export const CURRENT_USER = 'CURRENT_USER';
 export const ERROR = 'ERROR';
+export const USERS_ALL = 'USERS_ALL';

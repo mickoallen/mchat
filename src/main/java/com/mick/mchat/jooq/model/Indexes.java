@@ -17,7 +17,7 @@ import org.jooq.impl.Internal;
 
 
 /**
- * A class modelling indexes of tables of the <code>mchat</code> schema.
+ * A class modelling indexes of tables of the <code>public</code> schema.
  */
 @Generated(
     value = {
@@ -33,19 +33,19 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
-    public static final Index CONVERSATION_PRIMARY = Indexes0.CONVERSATION_PRIMARY;
-    public static final Index MESSAGE_PRIMARY = Indexes0.MESSAGE_PRIMARY;
-    public static final Index USER_PRIMARY = Indexes0.USER_PRIMARY;
-    public static final Index USER_CONVERSATION_PRIMARY = Indexes0.USER_CONVERSATION_PRIMARY;
+    public static final Index CONVERSATION_PKEY = Indexes0.CONVERSATION_PKEY;
+    public static final Index MESSAGE_PKEY = Indexes0.MESSAGE_PKEY;
+    public static final Index USER_PKEY = Indexes0.USER_PKEY;
+    public static final Index USER_CONVERSATION_PKEY = Indexes0.USER_CONVERSATION_PKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
-        public static Index CONVERSATION_PRIMARY = Internal.createIndex("PRIMARY", Conversation.CONVERSATION, new OrderField[] { Conversation.CONVERSATION.UUID }, true);
-        public static Index MESSAGE_PRIMARY = Internal.createIndex("PRIMARY", Message.MESSAGE, new OrderField[] { Message.MESSAGE.UUID }, true);
-        public static Index USER_PRIMARY = Internal.createIndex("PRIMARY", User.USER, new OrderField[] { User.USER.UUID }, true);
-        public static Index USER_CONVERSATION_PRIMARY = Internal.createIndex("PRIMARY", UserConversation.USER_CONVERSATION, new OrderField[] { UserConversation.USER_CONVERSATION.UUID }, true);
+        public static Index CONVERSATION_PKEY = Internal.createIndex("conversation_pkey", Conversation.CONVERSATION, new OrderField[] { Conversation.CONVERSATION.UUID }, true);
+        public static Index MESSAGE_PKEY = Internal.createIndex("message_pkey", Message.MESSAGE, new OrderField[] { Message.MESSAGE.UUID }, true);
+        public static Index USER_PKEY = Internal.createIndex("user_pkey", User.USER, new OrderField[] { User.USER.UUID }, true);
+        public static Index USER_CONVERSATION_PKEY = Internal.createIndex("user_conversation_pkey", UserConversation.USER_CONVERSATION, new OrderField[] { UserConversation.USER_CONVERSATION.UUID }, true);
     }
 }

@@ -27,7 +27,7 @@ import org.jooq.impl.CatalogImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultCatalog extends CatalogImpl {
 
-    private static final long serialVersionUID = 559686024;
+    private static final long serialVersionUID = 1231135286;
 
     /**
      * The reference instance of <code></code>
@@ -35,9 +35,9 @@ public class DefaultCatalog extends CatalogImpl {
     public static final DefaultCatalog DEFAULT_CATALOG = new DefaultCatalog();
 
     /**
-     * The schema <code>mchat</code>.
+     * The schema <code>public</code>.
      */
-    public final Mchat MCHAT = com.mick.mchat.jooq.model.Mchat.MCHAT;
+    public final Public PUBLIC = com.mick.mchat.jooq.model.Public.PUBLIC;
 
     /**
      * No further instances allowed
@@ -55,6 +55,6 @@ public class DefaultCatalog extends CatalogImpl {
 
     private final List<Schema> getSchemas0() {
         return Arrays.<Schema>asList(
-            Mchat.MCHAT);
+            Public.PUBLIC);
     }
 }

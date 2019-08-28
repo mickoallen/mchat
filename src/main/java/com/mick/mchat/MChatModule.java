@@ -19,6 +19,7 @@ import org.jooq.Configuration;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DefaultConfiguration;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Set;
 
@@ -52,11 +53,12 @@ public class MChatModule extends AbstractModule {
         hikariConfig.setPassword(config.getString("db.password"));
         hikariConfig.setConnectionTestQuery("SELECT 1;");
         hikariConfig.setConnectionTimeout(config.getInt("db.connection_timeout"));
+//        hikariConfig.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
 
         HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
 
         return new DefaultConfiguration()
-                .set(SQLDialect.MYSQL_5_7)
+                .set(SQLDialect.POSTGRES_9_4)
                 .set(hikariDataSource);
     }
 
@@ -86,7 +88,14 @@ public class MChatModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public UserConversationDao provideUserConversationDao(Configuration configuration){
+    public UserConversationDao provideUserConversationDao(Configuration configuration) {
         return new UserConversationDao(configuration);
+    }
+
+    @Provides
+    @Singleton
+    @Named("password.salt")
+    public String providePasswordSalt(Config config) {
+        return config.getString("password.salt");
     }
 }

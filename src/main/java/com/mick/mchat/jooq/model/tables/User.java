@@ -4,10 +4,9 @@
 package com.mick.mchat.jooq.model.tables;
 
 
-import com.mick.mchat.jooq.UUIDConverter;
 import com.mick.mchat.jooq.model.Indexes;
 import com.mick.mchat.jooq.model.Keys;
-import com.mick.mchat.jooq.model.Mchat;
+import com.mick.mchat.jooq.model.Public;
 import com.mick.mchat.jooq.model.tables.records.UserRecord;
 
 import java.sql.Timestamp;
@@ -43,10 +42,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-    private static final long serialVersionUID = 1852579350;
+    private static final long serialVersionUID = 245488433;
 
     /**
-     * The reference instance of <code>mchat.user</code>
+     * The reference instance of <code>public.user</code>
      */
     public static final User USER = new User();
 
@@ -59,46 +58,46 @@ public class User extends TableImpl<UserRecord> {
     }
 
     /**
-     * The column <code>mchat.user.uuid</code>.
+     * The column <code>public.user.uuid</code>.
      */
-    public final TableField<UserRecord, UUID> UUID = createField("uuid", org.jooq.impl.SQLDataType.BINARY(16).nullable(false), this, "", new UUIDConverter());
+    public final TableField<UserRecord, UUID> UUID = createField("uuid", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>mchat.user.username</code>.
+     * The column <code>public.user.username</code>.
      */
     public final TableField<UserRecord, String> USERNAME = createField("username", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>mchat.user.password</code>.
+     * The column <code>public.user.password</code>.
      */
     public final TableField<UserRecord, String> PASSWORD = createField("password", org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>mchat.user.avatar_url</code>.
+     * The column <code>public.user.avatar_url</code>.
      */
     public final TableField<UserRecord, String> AVATAR_URL = createField("avatar_url", org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
 
     /**
-     * The column <code>mchat.user.date_created</code>.
+     * The column <code>public.user.date_created</code>.
      */
-    public final TableField<UserRecord, Timestamp> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<UserRecord, Timestamp> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
 
     /**
-     * Create a <code>mchat.user</code> table reference
+     * Create a <code>public.user</code> table reference
      */
     public User() {
         this(DSL.name("user"), null);
     }
 
     /**
-     * Create an aliased <code>mchat.user</code> table reference
+     * Create an aliased <code>public.user</code> table reference
      */
     public User(String alias) {
         this(DSL.name(alias), USER);
     }
 
     /**
-     * Create an aliased <code>mchat.user</code> table reference
+     * Create an aliased <code>public.user</code> table reference
      */
     public User(Name alias) {
         this(alias, USER);
@@ -121,7 +120,7 @@ public class User extends TableImpl<UserRecord> {
      */
     @Override
     public Schema getSchema() {
-        return Mchat.MCHAT;
+        return Public.PUBLIC;
     }
 
     /**
@@ -129,7 +128,7 @@ public class User extends TableImpl<UserRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.USER_PRIMARY);
+        return Arrays.<Index>asList(Indexes.USER_PKEY);
     }
 
     /**
@@ -137,7 +136,7 @@ public class User extends TableImpl<UserRecord> {
      */
     @Override
     public UniqueKey<UserRecord> getPrimaryKey() {
-        return Keys.KEY_USER_PRIMARY;
+        return Keys.USER_PKEY;
     }
 
     /**
@@ -145,7 +144,7 @@ public class User extends TableImpl<UserRecord> {
      */
     @Override
     public List<UniqueKey<UserRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserRecord>>asList(Keys.KEY_USER_PRIMARY);
+        return Arrays.<UniqueKey<UserRecord>>asList(Keys.USER_PKEY);
     }
 
     /**

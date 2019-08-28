@@ -36,23 +36,21 @@ public class MessageDispatcher {
         InMessageType inMessageType = inMessageWrapper.getType();
 
         try {
-        AuthenticationToken validAuthenticationToken = null;
-        if (inMessageType.isAuthenticationRequired()) {
-            validAuthenticationToken = authenticationService.getValidAuthenticationToken(inMessageWrapper.getAuthenticationToken());
-        }
+            AuthenticationToken validAuthenticationToken = null;
+            if (inMessageType.isAuthenticationRequired()) {
+                validAuthenticationToken = authenticationService.getValidAuthenticationToken(inMessageWrapper.getAuthenticationToken());
+            }
 
-        InMessage inMessage = MessageCodec.deserialize(inboundMessageString, inMessageWrapper.getType().getClazz());
+            InMessage inMessage = MessageCodec.deserialize(inboundMessageString, inMessageWrapper.getType().getClazz());
 
-        //check if there is a consumer
-
-            if (inMessageHandlerRegistry.getMessageTypeConsumers().containsKey(inMessageWrapper.getType())) {
-                inMessageHandlerRegistry.getMessageTypeConsumers()
+            if (inMessageHandlerRegistry.getMessageConsumers().containsKey(inMessageWrapper.getType())) {
+                inMessageHandlerRegistry.getMessageConsumers()
                         .get(inMessageWrapper.getType())
-                        .accept(inMessage, validAuthenticationToken);
-            } else if (inMessageHandlerRegistry.getMessageTypeFunctions().containsKey(inMessageWrapper.getType())) {
-                OutMessageWrapper outMessageWrapper = inMessageHandlerRegistry.getMessageTypeFunctions()
+                        .accept(inMessage, validAuthenticationToken, wsContext);
+            } else if (inMessageHandlerRegistry.getReturningMessageConsumers().containsKey(inMessageWrapper.getType())) {
+                OutMessageWrapper outMessageWrapper = inMessageHandlerRegistry.getReturningMessageConsumers()
                         .get(inMessageWrapper.getType())
-                        .apply(inMessage, validAuthenticationToken);
+                        .accept(inMessage, validAuthenticationToken, wsContext);
 
                 wsContext.send(outMessageWrapper);
             }

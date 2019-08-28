@@ -1,34 +1,79 @@
 <template>
-    <div class="conversation">
-        <p>{{ allChat }}</p>
-        <div>
-            <textarea v-model="newMessage"></textarea>
-        </div>
-        <button class="modal-default-button" @click="sendMessage">Send message</button>
-    </div>
+    <v-content>
+        <v-container grid-list-md text-left>
+            <v-layout>
+                <v-flex xs12>
+                    <v-card>
+                        <v-sheet v-for="message in orderedMessages" v-bind:key="message.uuid">
+                            <v-sheet><b>{{ getUsername(message.userUuid) }}</b> {{ message.message }}</v-sheet>
+                        </v-sheet>
+                    </v-card>
+                    <span>
+                    <v-textarea outlined v-model="newMessage"></v-textarea><v-btn @click.stop="sendMessage">Send</v-btn>
+                    </span>
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </v-content>
 </template>
 
 <script>
 import store from "../store/store.js";
-import chatMessageRequest from "../messages/sendMessage.json";
+import sendMessage from "../messages/sendMessage.json";
+import { mapState } from "vuex";
+
+import {
+    VContent,
+    VContainer,
+    VLayout,
+    VFlex,
+    VBtn,
+    VTextarea,
+    VSheet,
+    VCard
+} from "vuetify/lib";
 
 export default {
+    components: {
+        VContent,
+        VContainer,
+        VLayout,
+        VFlex,
+        VBtn,
+        VTextarea,
+        VSheet,
+        VCard
+    },
+
     data() {
         return {
-          newMessage: ""
+            newMessage: ""
         };
     },
 
     computed: {
-        allChat() {
-            return store.getters.getAllChat;
+        ...mapState({
+            selectedConversation: state => state.selectedConversation,
+            currentUser: state => state.currentUser,
+            users: state => state.users
+        }),
+        orderedMessages: function() {
+            return this.lodash.orderBy(
+                this.selectedConversation.messages,
+                "dateCreated"
+            );
         }
     },
+
     methods: {
         sendMessage() {
-            var request = chatMessageRequest;
-            chatMessageRequest.message = this.newMessage;
-            this.$socket.sendObj(request);
+            var sendMessageRequest = sendMessage;
+            sendMessageRequest.conversationUuid = this.selectedConversation.uuid;
+            sendMessageRequest.message = this.newMessage;
+            store.dispatch("sendMessage", sendMessageRequest);
+        },
+        getUsername(uuid) {
+            return this.users.filter(user => user.uuid == uuid)[0].username;
         }
     }
 };

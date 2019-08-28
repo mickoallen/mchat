@@ -24,7 +24,7 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserConversation implements Serializable {
 
-    private static final long serialVersionUID = 838748860;
+    private static final long serialVersionUID = 759995972;
 
     private UUID      uuid;
     private UUID      conversationUuid;
@@ -82,6 +82,53 @@ public class UserConversation implements Serializable {
 
     public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final UserConversation other = (UserConversation) obj;
+        if (uuid == null) {
+            if (other.uuid != null)
+                return false;
+        }
+        else if (!uuid.equals(other.uuid))
+            return false;
+        if (conversationUuid == null) {
+            if (other.conversationUuid != null)
+                return false;
+        }
+        else if (!conversationUuid.equals(other.conversationUuid))
+            return false;
+        if (userUuid == null) {
+            if (other.userUuid != null)
+                return false;
+        }
+        else if (!userUuid.equals(other.userUuid))
+            return false;
+        if (dateCreated == null) {
+            if (other.dateCreated != null)
+                return false;
+        }
+        else if (!dateCreated.equals(other.dateCreated))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.uuid == null) ? 0 : this.uuid.hashCode());
+        result = prime * result + ((this.conversationUuid == null) ? 0 : this.conversationUuid.hashCode());
+        result = prime * result + ((this.userUuid == null) ? 0 : this.userUuid.hashCode());
+        result = prime * result + ((this.dateCreated == null) ? 0 : this.dateCreated.hashCode());
+        return result;
     }
 
     @Override

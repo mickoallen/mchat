@@ -4,11 +4,9 @@
 package com.mick.mchat.jooq.model.tables;
 
 
-import com.mick.mchat.jooq.UUIDConverter;
 import com.mick.mchat.jooq.model.Indexes;
 import com.mick.mchat.jooq.model.Keys;
-import com.mick.mchat.jooq.model.Mchat;
-import com.mick.mchat.jooq.model.enums.MessageType;
+import com.mick.mchat.jooq.model.Public;
 import com.mick.mchat.jooq.model.tables.records.MessageRecord;
 
 import java.sql.Timestamp;
@@ -44,10 +42,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Message extends TableImpl<MessageRecord> {
 
-    private static final long serialVersionUID = -2011024772;
+    private static final long serialVersionUID = 1994691929;
 
     /**
-     * The reference instance of <code>mchat.message</code>
+     * The reference instance of <code>public.message</code>
      */
     public static final Message MESSAGE = new Message();
 
@@ -60,51 +58,51 @@ public class Message extends TableImpl<MessageRecord> {
     }
 
     /**
-     * The column <code>mchat.message.uuid</code>.
+     * The column <code>public.message.uuid</code>.
      */
-    public final TableField<MessageRecord, UUID> UUID = createField("uuid", org.jooq.impl.SQLDataType.BINARY(16).nullable(false), this, "", new UUIDConverter());
+    public final TableField<MessageRecord, UUID> UUID = createField("uuid", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>mchat.message.user_uuid</code>.
+     * The column <code>public.message.conversation_uuid</code>.
      */
-    public final TableField<MessageRecord, UUID> USER_UUID = createField("user_uuid", org.jooq.impl.SQLDataType.BINARY(16).nullable(false), this, "", new UUIDConverter());
+    public final TableField<MessageRecord, UUID> CONVERSATION_UUID = createField("conversation_uuid", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>mchat.message.conversation_uuid</code>.
+     * The column <code>public.message.user_uuid</code>.
      */
-    public final TableField<MessageRecord, UUID> CONVERSATION_UUID = createField("conversation_uuid", org.jooq.impl.SQLDataType.BINARY(16).nullable(false), this, "", new UUIDConverter());
+    public final TableField<MessageRecord, UUID> USER_UUID = createField("user_uuid", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>mchat.message.type</code>.
+     * The column <code>public.message.type</code>.
      */
-    public final TableField<MessageRecord, MessageType> TYPE = createField("type", org.jooq.impl.SQLDataType.VARCHAR(5).nullable(false).defaultValue(org.jooq.impl.DSL.inline("TEXT", org.jooq.impl.SQLDataType.VARCHAR)).asEnumDataType(com.mick.mchat.jooq.model.enums.MessageType.class), this, "");
+    public final TableField<MessageRecord, String> TYPE = createField("type", org.jooq.impl.SQLDataType.VARCHAR(20).nullable(false).defaultValue(org.jooq.impl.DSL.field("'TEXT'::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
-     * The column <code>mchat.message.body</code>.
+     * The column <code>public.message.body</code>.
      */
-    public final TableField<MessageRecord, String> BODY = createField("body", org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<MessageRecord, String> BODY = createField("body", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
-     * The column <code>mchat.message.date_created</code>.
+     * The column <code>public.message.date_created</code>.
      */
-    public final TableField<MessageRecord, Timestamp> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<MessageRecord, Timestamp> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
 
     /**
-     * Create a <code>mchat.message</code> table reference
+     * Create a <code>public.message</code> table reference
      */
     public Message() {
         this(DSL.name("message"), null);
     }
 
     /**
-     * Create an aliased <code>mchat.message</code> table reference
+     * Create an aliased <code>public.message</code> table reference
      */
     public Message(String alias) {
         this(DSL.name(alias), MESSAGE);
     }
 
     /**
-     * Create an aliased <code>mchat.message</code> table reference
+     * Create an aliased <code>public.message</code> table reference
      */
     public Message(Name alias) {
         this(alias, MESSAGE);
@@ -127,7 +125,7 @@ public class Message extends TableImpl<MessageRecord> {
      */
     @Override
     public Schema getSchema() {
-        return Mchat.MCHAT;
+        return Public.PUBLIC;
     }
 
     /**
@@ -135,7 +133,7 @@ public class Message extends TableImpl<MessageRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.MESSAGE_PRIMARY);
+        return Arrays.<Index>asList(Indexes.MESSAGE_PKEY);
     }
 
     /**
@@ -143,7 +141,7 @@ public class Message extends TableImpl<MessageRecord> {
      */
     @Override
     public UniqueKey<MessageRecord> getPrimaryKey() {
-        return Keys.KEY_MESSAGE_PRIMARY;
+        return Keys.MESSAGE_PKEY;
     }
 
     /**
@@ -151,7 +149,7 @@ public class Message extends TableImpl<MessageRecord> {
      */
     @Override
     public List<UniqueKey<MessageRecord>> getKeys() {
-        return Arrays.<UniqueKey<MessageRecord>>asList(Keys.KEY_MESSAGE_PRIMARY);
+        return Arrays.<UniqueKey<MessageRecord>>asList(Keys.MESSAGE_PKEY);
     }
 
     /**

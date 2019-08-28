@@ -1,4 +1,5 @@
 {
     "type": "CREATE_CONVERSATION",
-    "users":[]
+    "users":[],
+    "name":""
 }

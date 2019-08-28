@@ -1,18 +1,20 @@
 <template>
-    <div>
-        <button class="modal-default-button" @click="getCurrentUserStatus">Get current user status</button>
-        <button class="modal-default-button" @click="logout">Logout</button>
-        <p>Username: {{ username }}</p>
-        <p>Connected: {{ connected }}</p>
-        <p>Logged in: {{ loggedIn }}</p>
-    </div>
+    <v-content>
+        <v-label>Username: {{ username }} Connected: {{ connected }} Logged in: {{ loggedIn }}</v-label>
+    </v-content>
 </template>
 
 <script>
 import store from "../store/store.js";
 import currentUserGet from "../messages/currentUserGet.json";
 
+import { VContent, VLabel } from "vuetify/lib";
+
 export default {
+    components: {
+        VContent,
+        VLabel
+    },
     computed: {
         connected() {
             return store.getters.getCurrentUserInfo.connected;
@@ -26,11 +28,10 @@ export default {
     },
     methods: {
         getCurrentUserStatus() {
-            this.$toasted.show('hello billo');
-            store.dispatch('sendMessage', currentUserGet);
+            store.dispatch("sendMessage", currentUserGet);
         },
-        logout(){
-            store.commit('logout');
+        logout() {
+            store.commit("logout");
         }
     }
 };

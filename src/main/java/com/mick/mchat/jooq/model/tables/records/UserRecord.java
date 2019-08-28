@@ -31,73 +31,73 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Record5<UUID, String, String, String, Timestamp> {
 
-    private static final long serialVersionUID = 572032646;
+    private static final long serialVersionUID = -1975303680;
 
     /**
-     * Setter for <code>mchat.user.uuid</code>.
+     * Setter for <code>public.user.uuid</code>.
      */
     public void setUuid(UUID value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>mchat.user.uuid</code>.
+     * Getter for <code>public.user.uuid</code>.
      */
     public UUID getUuid() {
         return (UUID) get(0);
     }
 
     /**
-     * Setter for <code>mchat.user.username</code>.
+     * Setter for <code>public.user.username</code>.
      */
     public void setUsername(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>mchat.user.username</code>.
+     * Getter for <code>public.user.username</code>.
      */
     public String getUsername() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>mchat.user.password</code>.
+     * Setter for <code>public.user.password</code>.
      */
     public void setPassword(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>mchat.user.password</code>.
+     * Getter for <code>public.user.password</code>.
      */
     public String getPassword() {
         return (String) get(2);
     }
 
     /**
-     * Setter for <code>mchat.user.avatar_url</code>.
+     * Setter for <code>public.user.avatar_url</code>.
      */
     public void setAvatarUrl(String value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>mchat.user.avatar_url</code>.
+     * Getter for <code>public.user.avatar_url</code>.
      */
     public String getAvatarUrl() {
         return (String) get(3);
     }
 
     /**
-     * Setter for <code>mchat.user.date_created</code>.
+     * Setter for <code>public.user.date_created</code>.
      */
     public void setDateCreated(Timestamp value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>mchat.user.date_created</code>.
+     * Getter for <code>public.user.date_created</code>.
      */
     public Timestamp getDateCreated() {
         return (Timestamp) get(4);

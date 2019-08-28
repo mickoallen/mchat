@@ -4,9 +4,6 @@
 package com.mick.mchat.jooq.model.tables.pojos;
 
 
-import com.mick.mchat.jooq.model.enums.ConversationStatus;
-import com.mick.mchat.jooq.model.enums.ConversationType;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -27,13 +24,13 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Conversation implements Serializable {
 
-    private static final long serialVersionUID = -981735897;
+    private static final long serialVersionUID = -810424601;
 
-    private UUID               uuid;
-    private String             name;
-    private ConversationStatus status;
-    private ConversationType   type;
-    private Timestamp          dateCreated;
+    private UUID      uuid;
+    private String    name;
+    private String    status;
+    private String    type;
+    private Timestamp dateCreated;
 
     public Conversation() {}
 
@@ -46,11 +43,11 @@ public class Conversation implements Serializable {
     }
 
     public Conversation(
-        UUID               uuid,
-        String             name,
-        ConversationStatus status,
-        ConversationType   type,
-        Timestamp          dateCreated
+        UUID      uuid,
+        String    name,
+        String    status,
+        String    type,
+        Timestamp dateCreated
     ) {
         this.uuid = uuid;
         this.name = name;
@@ -75,19 +72,19 @@ public class Conversation implements Serializable {
         this.name = name;
     }
 
-    public ConversationStatus getStatus() {
+    public String getStatus() {
         return this.status;
     }
 
-    public void setStatus(ConversationStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public ConversationType getType() {
+    public String getType() {
         return this.type;
     }
 
-    public void setType(ConversationType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -97,6 +94,60 @@ public class Conversation implements Serializable {
 
     public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Conversation other = (Conversation) obj;
+        if (uuid == null) {
+            if (other.uuid != null)
+                return false;
+        }
+        else if (!uuid.equals(other.uuid))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        }
+        else if (!name.equals(other.name))
+            return false;
+        if (status == null) {
+            if (other.status != null)
+                return false;
+        }
+        else if (!status.equals(other.status))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        }
+        else if (!type.equals(other.type))
+            return false;
+        if (dateCreated == null) {
+            if (other.dateCreated != null)
+                return false;
+        }
+        else if (!dateCreated.equals(other.dateCreated))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.uuid == null) ? 0 : this.uuid.hashCode());
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.status == null) ? 0 : this.status.hashCode());
+        result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
+        result = prime * result + ((this.dateCreated == null) ? 0 : this.dateCreated.hashCode());
+        return result;
     }
 
     @Override

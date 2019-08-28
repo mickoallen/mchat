@@ -4,7 +4,6 @@
 package com.mick.mchat.jooq.model.tables.daos;
 
 
-import com.mick.mchat.jooq.model.enums.MessageType;
 import com.mick.mchat.jooq.model.tables.Message;
 import com.mick.mchat.jooq.model.tables.records.MessageRecord;
 
@@ -68,13 +67,6 @@ public class MessageDao extends DAOImpl<MessageRecord, com.mick.mchat.jooq.model
     }
 
     /**
-     * Fetch records that have <code>user_uuid IN (values)</code>
-     */
-    public List<com.mick.mchat.jooq.model.tables.pojos.Message> fetchByUserUuid(UUID... values) {
-        return fetch(Message.MESSAGE.USER_UUID, values);
-    }
-
-    /**
      * Fetch records that have <code>conversation_uuid IN (values)</code>
      */
     public List<com.mick.mchat.jooq.model.tables.pojos.Message> fetchByConversationUuid(UUID... values) {
@@ -82,9 +74,16 @@ public class MessageDao extends DAOImpl<MessageRecord, com.mick.mchat.jooq.model
     }
 
     /**
+     * Fetch records that have <code>user_uuid IN (values)</code>
+     */
+    public List<com.mick.mchat.jooq.model.tables.pojos.Message> fetchByUserUuid(UUID... values) {
+        return fetch(Message.MESSAGE.USER_UUID, values);
+    }
+
+    /**
      * Fetch records that have <code>type IN (values)</code>
      */
-    public List<com.mick.mchat.jooq.model.tables.pojos.Message> fetchByType(MessageType... values) {
+    public List<com.mick.mchat.jooq.model.tables.pojos.Message> fetchByType(String... values) {
         return fetch(Message.MESSAGE.TYPE, values);
     }
 

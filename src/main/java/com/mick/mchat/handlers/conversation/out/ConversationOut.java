@@ -1,7 +1,6 @@
 package com.mick.mchat.handlers.conversation.out;
 
 import com.mick.mchat.handlers.chat.out.ChatMessageOut;
-import com.mick.mchat.jooq.model.enums.ConversationType;
 import com.mick.mchat.websocket.outbound.OutMessage;
 
 import java.util.Set;
@@ -10,7 +9,7 @@ import java.util.UUID;
 public class ConversationOut implements OutMessage {
     private UUID uuid;
     private String name;
-    private ConversationType type;
+    private String type;
     private Set<UUID> participants;
     private Set<ChatMessageOut> messages;
 
@@ -23,11 +22,11 @@ public class ConversationOut implements OutMessage {
         return this;
     }
 
-    public ConversationType getType() {
+    public String getType() {
         return type;
     }
 
-    public ConversationOut setType(ConversationType type) {
+    public ConversationOut setType(String type) {
         this.type = type;
         return this;
     }

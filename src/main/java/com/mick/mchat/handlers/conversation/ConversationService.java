@@ -1,6 +1,5 @@
 package com.mick.mchat.handlers.conversation;
 
-import com.mick.mchat.jooq.model.enums.ConversationType;
 import com.mick.mchat.jooq.model.tables.daos.ConversationDao;
 import com.mick.mchat.jooq.model.tables.daos.UserConversationDao;
 import com.mick.mchat.jooq.model.tables.pojos.Conversation;
@@ -28,17 +27,14 @@ public class ConversationService {
         this.userConversationDao = userConversationDao;
     }
 
-    public void createConversationForUsers(List<UUID> users) {
+    public void createConversationForUsers(Conversation conversation, List<UUID> users) {
         Timestamp now = new Timestamp(Instant.now().toEpochMilli());
-
-        Conversation conversation = new Conversation();
         conversation.setDateCreated(now);
-        conversation.setName("A random name " + Math.random());
 
         if (users.size() <= 2) {
-            conversation.setType(ConversationType.PRIVATE);
+            conversation.setType("PRIVATE");
         } else {
-            conversation.setType(ConversationType.GROUP);
+            conversation.setType("GROUP");
         }
 
         conversation.setUuid(UUID.randomUUID());

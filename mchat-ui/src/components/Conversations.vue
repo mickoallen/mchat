@@ -1,20 +1,21 @@
 <template>
-    <div>
-        <v-navigation-drawer v-if="isLoggedIn" app clipped permanent>
+    <v-app>
+        <v-navigation-drawer v-if="showConversations" app clipped>
             <v-list dense two-line>
                 <v-list-item
-                    v-for="conversation in getConversations"
+                    v-for="conversation in conversations"
                     v-bind:key="conversation.uuid"
-                    @click.stop="selectConversation"
+                    @click.stop="selectConversation(conversation)"
                 >
                     <v-list-item-action>
                         <v-icon>mdi-face</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
-                        <v-list-item-title>{{ conversation.name }}</v-list-item-title>
+                        <v-list-item-title v-if="conversation.uuid == selectedConversation.uuid"><h3>{{ conversation.name }}</h3></v-list-item-title>
+                        <v-list-item-title v-if="conversation.uuid != selectedConversation.uuid">{{ conversation.name }}</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-                <v-list-item @click.stop="newConversations = !newConversations">
+                <v-list-item @click.stop="clickNewConversation">
                     <v-list-item-action>
                         <v-icon>mdi-comment-plus</v-icon>
                     </v-list-item-action>
@@ -24,21 +25,17 @@
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
-        <br />
-        <v-navigation-drawer app fixed clipped left temporary v-model="newConversations">
-            <v-btn @click.stop="createConversation">Create conversation</v-btn>
-        </v-navigation-drawer>
 
-        <v-content>
-            {{ selectedConversation.name }}
-        </v-content>
-    </div>
+        <chat-conversation v-if="selectedConversation.uuid != null" />
+        <new-conversation v-if="showNewConversation"/>
+    </v-app>
 </template>
 
 <script>
-import conversationsGet from "../messages/conversationsGet.json";
-import createConversationRequest from "../messages/createConversation.json";
+import ChatConversation from "./ChatConversation";
+import NewConversation from "./NewConversation";
 import store from "../store/store.js";
+import { mapState } from "vuex";
 
 import {
     VNavigationDrawer,
@@ -48,50 +45,49 @@ import {
     VListItemContent,
     VListItemTitle,
     VIcon,
-    VBtn,
-    VContent
+    VApp
 } from "vuetify/lib";
 
 export default {
     components: {
+        ChatConversation,
+        NewConversation,
+        VApp,
         VNavigationDrawer,
         VList,
         VListItem,
         VListItemAction,
         VListItemContent,
         VListItemTitle,
-        VIcon,
-        VBtn,
-        VContent
+        VIcon
     },
 
     data() {
         return {
             newConversations: false,
-            selectedConversation: null
+            selectedUsers: []
         };
     },
 
     computed: {
-        getConversations() {
-            return store.getters.getConversations;
-        },
-        isLoggedIn() {
-            return store.getters.getIsLoggedIn;
-        }
+        ...mapState({
+            conversations: state => state.conversations,
+            isLoggedIn: state => state.currentUser.loggedIn,
+            selectedConversation: state => state.selectedConversation,
+            users: state => state.users,
+            showConversations: state => state.showConversations,
+            showNewConversation: state => state.newConversation
+        })
     },
 
     methods: {
-        loadConversations() {
-            this.$socket.sendObj(conversationsGet);
-        },
-        createConversation() {
-            //yourmom
-            console.log("creating conversation");
-            store.dispatch("sendMessage", createConversationRequest);
-        },
         selectConversation(conversation) {
-            this.selectedConversation = conversation;
+            store.dispatch("setNewConversation", false);
+            store.dispatch("setSelectedConversation", conversation);
+        },
+        clickNewConversation() {
+            store.dispatch("setSelectedConversation", "");
+            store.dispatch("setNewConversation", !this.showNewConversation);
         }
     }
 };

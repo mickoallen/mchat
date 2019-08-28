@@ -31,59 +31,59 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserConversationRecord extends UpdatableRecordImpl<UserConversationRecord> implements Record4<UUID, UUID, UUID, Timestamp> {
 
-    private static final long serialVersionUID = 949901989;
+    private static final long serialVersionUID = -592279899;
 
     /**
-     * Setter for <code>mchat.user_conversation.uuid</code>.
+     * Setter for <code>public.user_conversation.uuid</code>.
      */
     public void setUuid(UUID value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>mchat.user_conversation.uuid</code>.
+     * Getter for <code>public.user_conversation.uuid</code>.
      */
     public UUID getUuid() {
         return (UUID) get(0);
     }
 
     /**
-     * Setter for <code>mchat.user_conversation.conversation_uuid</code>.
+     * Setter for <code>public.user_conversation.conversation_uuid</code>.
      */
     public void setConversationUuid(UUID value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>mchat.user_conversation.conversation_uuid</code>.
+     * Getter for <code>public.user_conversation.conversation_uuid</code>.
      */
     public UUID getConversationUuid() {
         return (UUID) get(1);
     }
 
     /**
-     * Setter for <code>mchat.user_conversation.user_uuid</code>.
+     * Setter for <code>public.user_conversation.user_uuid</code>.
      */
     public void setUserUuid(UUID value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>mchat.user_conversation.user_uuid</code>.
+     * Getter for <code>public.user_conversation.user_uuid</code>.
      */
     public UUID getUserUuid() {
         return (UUID) get(2);
     }
 
     /**
-     * Setter for <code>mchat.user_conversation.date_created</code>.
+     * Setter for <code>public.user_conversation.date_created</code>.
      */
     public void setDateCreated(Timestamp value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>mchat.user_conversation.date_created</code>.
+     * Getter for <code>public.user_conversation.date_created</code>.
      */
     public Timestamp getDateCreated() {
         return (Timestamp) get(3);

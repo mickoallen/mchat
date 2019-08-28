@@ -6,5 +6,6 @@ public enum OutMessageType {
     CONVERSATIONS_GET_ALL_RESPONSE,
     CHAT_MESSAGE,
     CURRENT_USER,
-    ERROR;
+    ERROR,
+    USERS_ALL;
 }

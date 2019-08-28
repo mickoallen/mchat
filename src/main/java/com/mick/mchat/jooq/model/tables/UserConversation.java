@@ -4,10 +4,9 @@
 package com.mick.mchat.jooq.model.tables;
 
 
-import com.mick.mchat.jooq.UUIDConverter;
 import com.mick.mchat.jooq.model.Indexes;
 import com.mick.mchat.jooq.model.Keys;
-import com.mick.mchat.jooq.model.Mchat;
+import com.mick.mchat.jooq.model.Public;
 import com.mick.mchat.jooq.model.tables.records.UserConversationRecord;
 
 import java.sql.Timestamp;
@@ -43,10 +42,10 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserConversation extends TableImpl<UserConversationRecord> {
 
-    private static final long serialVersionUID = 752356397;
+    private static final long serialVersionUID = -635243096;
 
     /**
-     * The reference instance of <code>mchat.user_conversation</code>
+     * The reference instance of <code>public.user_conversation</code>
      */
     public static final UserConversation USER_CONVERSATION = new UserConversation();
 
@@ -59,41 +58,41 @@ public class UserConversation extends TableImpl<UserConversationRecord> {
     }
 
     /**
-     * The column <code>mchat.user_conversation.uuid</code>.
+     * The column <code>public.user_conversation.uuid</code>.
      */
-    public final TableField<UserConversationRecord, UUID> UUID = createField("uuid", org.jooq.impl.SQLDataType.BINARY(16).nullable(false), this, "", new UUIDConverter());
+    public final TableField<UserConversationRecord, UUID> UUID = createField("uuid", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>mchat.user_conversation.conversation_uuid</code>.
+     * The column <code>public.user_conversation.conversation_uuid</code>.
      */
-    public final TableField<UserConversationRecord, UUID> CONVERSATION_UUID = createField("conversation_uuid", org.jooq.impl.SQLDataType.BINARY(16).nullable(false), this, "", new UUIDConverter());
+    public final TableField<UserConversationRecord, UUID> CONVERSATION_UUID = createField("conversation_uuid", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>mchat.user_conversation.user_uuid</code>.
+     * The column <code>public.user_conversation.user_uuid</code>.
      */
-    public final TableField<UserConversationRecord, UUID> USER_UUID = createField("user_uuid", org.jooq.impl.SQLDataType.BINARY(16).nullable(false), this, "", new UUIDConverter());
+    public final TableField<UserConversationRecord, UUID> USER_UUID = createField("user_uuid", org.jooq.impl.SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>mchat.user_conversation.date_created</code>.
+     * The column <code>public.user_conversation.date_created</code>.
      */
-    public final TableField<UserConversationRecord, Timestamp> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP(6)", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<UserConversationRecord, Timestamp> DATE_CREATED = createField("date_created", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
 
     /**
-     * Create a <code>mchat.user_conversation</code> table reference
+     * Create a <code>public.user_conversation</code> table reference
      */
     public UserConversation() {
         this(DSL.name("user_conversation"), null);
     }
 
     /**
-     * Create an aliased <code>mchat.user_conversation</code> table reference
+     * Create an aliased <code>public.user_conversation</code> table reference
      */
     public UserConversation(String alias) {
         this(DSL.name(alias), USER_CONVERSATION);
     }
 
     /**
-     * Create an aliased <code>mchat.user_conversation</code> table reference
+     * Create an aliased <code>public.user_conversation</code> table reference
      */
     public UserConversation(Name alias) {
         this(alias, USER_CONVERSATION);
@@ -116,7 +115,7 @@ public class UserConversation extends TableImpl<UserConversationRecord> {
      */
     @Override
     public Schema getSchema() {
-        return Mchat.MCHAT;
+        return Public.PUBLIC;
     }
 
     /**
@@ -124,7 +123,7 @@ public class UserConversation extends TableImpl<UserConversationRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.USER_CONVERSATION_PRIMARY);
+        return Arrays.<Index>asList(Indexes.USER_CONVERSATION_PKEY);
     }
 
     /**
@@ -132,7 +131,7 @@ public class UserConversation extends TableImpl<UserConversationRecord> {
      */
     @Override
     public UniqueKey<UserConversationRecord> getPrimaryKey() {
-        return Keys.KEY_USER_CONVERSATION_PRIMARY;
+        return Keys.USER_CONVERSATION_PKEY;
     }
 
     /**
@@ -140,7 +139,7 @@ public class UserConversation extends TableImpl<UserConversationRecord> {
      */
     @Override
     public List<UniqueKey<UserConversationRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserConversationRecord>>asList(Keys.KEY_USER_CONVERSATION_PRIMARY);
+        return Arrays.<UniqueKey<UserConversationRecord>>asList(Keys.USER_CONVERSATION_PKEY);
     }
 
     /**

@@ -4,9 +4,13 @@ import com.mick.mchat.error.NotFoundException;
 import com.mick.mchat.jooq.model.tables.daos.UserDao;
 import com.mick.mchat.jooq.model.tables.pojos.User;
 import com.mick.mchat.security.AuthenticationService;
+import com.mick.mchat.security.PasswordService;
+import com.mick.mchat.websocket.WsContextStore;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,20 +18,25 @@ import static org.jooq.impl.DSL.field;
 
 @Singleton
 public class UserService {
-    private final AuthenticationService authenticationService;
     private final UserDao userDao;
+    private final PasswordService passwordService;
+    private final WsContextStore wsContextStore;
 
     @Inject
     public UserService(
             final AuthenticationService authenticationService,
-            final UserDao userDao
-    ) {
+            final UserDao userDao,
+            final PasswordService passwordService,
+            final WsContextStore wsContextStore) {
         this.userDao = userDao;
-        this.authenticationService = authenticationService;
+        this.passwordService = passwordService;
+        this.wsContextStore = wsContextStore;
     }
 
     public User createUser(User user) {
         user.setUuid(UUID.randomUUID());
+        user.setPassword(passwordService.getPasswordHash(user.getPassword()));
+        user.setDateCreated(Timestamp.from(Instant.now()));
         userDao.insert(user);
         return user;
     }
@@ -37,8 +46,10 @@ public class UserService {
                 .configuration()
                 .dsl()
                 .selectFrom(userDao.getTable())
-                .where(field(com.mick.mchat.jooq.model.tables.User.USER.USERNAME).eq(username))
-                .and(field(com.mick.mchat.jooq.model.tables.User.USER.PASSWORD).eq(password))
+                .where(field(com.mick.mchat.jooq.model.tables.User.USER.USERNAME)
+                        .eq(username))
+                .and(field(com.mick.mchat.jooq.model.tables.User.USER.PASSWORD)
+                        .eq(passwordService.getPasswordHash(password)))
                 .fetchOptionalInto(User.class)
                 .orElseThrow(() -> new NotFoundException("No user for that username/password"));
     }
@@ -58,8 +69,7 @@ public class UserService {
         return userDao.findAll();
     }
 
-    public String login(String username, String password) {
-        User user = getUserFromCredentials(username, password);
-        return authenticationService.createToken(user);
+    public User login(String username, String password) {
+        return getUserFromCredentials(username, password);
     }
 }

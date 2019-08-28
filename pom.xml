@@ -8,12 +8,16 @@
     <artifactId>mchat</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <version.jooq>3.11.11</version.jooq>
+    </properties>
+
     <dependencies>
         <!-- Javalin -->
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.0</version>
         </dependency>
 
         <!-- Logging -->
@@ -73,10 +77,11 @@
             <version>3.11.11</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.17</version>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
         </dependency>
+
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
@@ -113,109 +118,94 @@
                     <target>11</target>
                 </configuration>
             </plugin>
-
             <plugin>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <version>3.11.11</version>
-
-                <!-- The plugin should hook into the generate goal -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <configuration>
+                    <transformers>
+                        <!-- add Main-Class to manifest file -->
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>com.mick.mchat.Main</mainClass>
+                        </transformer>
+                    </transformers>
+                </configuration>
                 <executions>
                     <execution>
+                        <phase>package</phase>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>shade</goal>
                         </goals>
                     </execution>
                 </executions>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>8.0.17</version>
-                    </dependency>
-                </dependencies>
-
-                <configuration>
-                    <jdbc>
-                        <driver>${jdbc.driver}</driver>
-                        <url>${jdbc.url}</url>
-                        <user>${jdbc.user}</user>
-                        <password>${jdbc.password}</password>
-                    </jdbc>
-
-                    <generator>
-                        <generate>
-                            <daos>true</daos>
-                        </generate>
-                        <database>
-                            <name>org.jooq.meta.mysql.MySQLDatabase</name>
-                            <includes>.*</includes>
-                            <inputSchema>mchat</inputSchema>
-                            <forcedTypes>
-                                <forcedType>
-                                    <userType>java.util.UUID</userType>
-                                    <types>BINARY\(16\)</types>
-                                    <expression>.*\.*ID$</expression>
-                                    <converter>com.mick.mchat.jooq.UUIDConverter</converter>
-                                </forcedType>
-                            </forcedTypes>
-                        </database>
-                        <target>
-                            <packageName>com.mick.mchat.jooq.model</packageName>
-                            <directory>src/main/java</directory>
-                        </target>
-                    </generator>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.5.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <systemProperties>
-                        <systemProperty>
-                            <key>jdbc.driver</key>
-                            <value>${jdbc.driver}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>jdbc.user</key>
-                            <value>${jdbc.user}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>jdbc.password</key>
-                            <value>${jdbc.password}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>jdbc.url</key>
-                            <value>${jdbc.url}</value>
-                        </systemProperty>
-                    </systemProperties>
-                </configuration>
             </plugin>
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>default</id>
+            <id>create-schema</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
                 <jdbc.user>root</jdbc.user>
                 <jdbc.password>password</jdbc.password>
-                <jdbc.url>jdbc:mysql://localhost:3306/mchat?serverTimezone=UTC</jdbc.url>
-                <jdbc.driver>com.mysql.cj.jdbc.Driver</jdbc.driver>
+                <jdbc.url>jdbc:postgresql://localhost:3306/public?serverTimezone=UTC</jdbc.url>
+                <jdbc.driver>org.jooq.util.postgres.PostgresDatabase</jdbc.driver>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq-codegen-maven</artifactId>
+                        <version>${version.jooq}</version>
+
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.postgresql</groupId>
+                                <artifactId>postgresql</artifactId>
+                                <version>9.4.1208</version>
+                            </dependency>
+                        </dependencies>
+
+                        <configuration>
+                            <jdbc>
+                                <driver>org.postgresql.Driver</driver>
+                                <url>jdbc:postgresql:postgres</url>
+                                <user>postgres</user>
+                                <password>postgres</password>
+                            </jdbc>
+
+                            <generator>
+                                <generate>
+                                    <pojos>true</pojos>
+                                    <daos>true</daos>
+                                    <pojosEqualsAndHashCode>true</pojosEqualsAndHashCode>
+                                </generate>
+                                <database>
+                                    <name>org.jooq.meta.postgres.PostgresDatabase</name>
+                                    <includes>.*</includes>
+                                    <inputSchema>public</inputSchema>
+                                </database>
+                                <target>
+                                    <packageName>com.mick.mchat.jooq.model</packageName>
+                                    <directory>src/main/java</directory>
+                                </target>
+                            </generator>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

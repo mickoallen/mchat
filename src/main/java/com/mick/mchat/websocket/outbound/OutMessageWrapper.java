@@ -3,7 +3,7 @@ package com.mick.mchat.websocket.outbound;
 public class OutMessageWrapper {
 
     private final OutMessageType type;
-    private OutMessage body;
+    private Object body;
 
     public OutMessageWrapper(OutMessageType type) {
         this.type = type;
@@ -13,7 +13,7 @@ public class OutMessageWrapper {
         return new OutMessageWrapper(type);
     }
 
-    public OutMessageWrapper body(OutMessage body){
+    public OutMessageWrapper body(Object body){
         this.body = body;
         return this;
     }
@@ -22,7 +22,7 @@ public class OutMessageWrapper {
         return type;
     }
 
-    public OutMessage getBody() {
+    public Object getBody() {
         return body;
     }
 }
