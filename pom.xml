@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <version.jooq>3.11.11</version.jooq>
+        <version.jooq>3.11.12</version.jooq>
     </properties>
 
     <dependencies>
@@ -64,22 +64,22 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
-            <version>3.11.11</version>
+            <version>3.11.12</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-meta</artifactId>
-            <version>3.11.11</version>
+            <version>3.11.12</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-codegen</artifactId>
-            <version>3.11.11</version>
+            <version>3.11.12</version>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>42.2.6</version>
         </dependency>
 
         <dependency>
@@ -160,7 +160,7 @@
                     <plugin>
                         <groupId>org.jooq</groupId>
                         <artifactId>jooq-codegen-maven</artifactId>
-                        <version>${version.jooq}</version>
+                        <version>3.11.12</version>
 
                         <executions>
                             <execution>
@@ -174,7 +174,7 @@
                             <dependency>
                                 <groupId>org.postgresql</groupId>
                                 <artifactId>postgresql</artifactId>
-                                <version>9.4.1208</version>
+                                <version>42.2.6</version>
                             </dependency>
                         </dependencies>
 

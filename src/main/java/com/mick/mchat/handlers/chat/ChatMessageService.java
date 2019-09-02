@@ -1,6 +1,7 @@
 package com.mick.mchat.handlers.chat;
 
 import com.mick.mchat.handlers.chat.in.ChatMessageIn;
+import com.mick.mchat.handlers.chat.in.UserTypingIn;
 import com.mick.mchat.handlers.conversation.ConversationService;
 import com.mick.mchat.jooq.model.tables.daos.MessageDao;
 import com.mick.mchat.jooq.model.tables.pojos.Message;
@@ -80,6 +81,25 @@ public class ChatMessageService {
 
         OutMessageWrapper outMessageWrapper = OutMessageWrapper.of(OutMessageType.CHAT_MESSAGE)
                 .body(ChatMessageMapper.toChatMessageOut(message));
+
+        wsContextStore.getWsContextForUsers(
+                userConversations
+                        .stream()
+                        .map(UserConversation::getUserUuid)
+                        .collect(Collectors.toSet())
+        )
+                .forEach(wsContext -> wsContext.send(outMessageWrapper));
+    }
+
+    public void userIsTyping(UserTypingIn userTypingIn, AuthenticationToken authenticationToken) {
+        List<UserConversation> userConversations = conversationService.getUserConversations(List.of(userTypingIn.getConversationUuid()));
+
+        OutMessageWrapper outMessageWrapper = OutMessageWrapper.of(OutMessageType.USER_TYPING)
+                .body(ChatMessageMapper.toTypingMessageOut(
+                        authenticationToken.getUserUuid(),
+                        userTypingIn.getConversationUuid()
+                        )
+                );
 
         wsContextStore.getWsContextForUsers(
                 userConversations

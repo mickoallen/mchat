@@ -21,6 +21,8 @@ import org.jooq.impl.DefaultConfiguration;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 
 /**
@@ -44,21 +46,33 @@ public class MChatModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public Configuration provideJooqConfiguration(Config config) {
+    public Configuration provideJooqConfiguration(Config config) throws URISyntaxException {
+
+        URI dbUri = new URI(config.getString("db.url"));
+
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+
+        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+
+        //add ssl if not localhost
+        if(!"localhost".equals(dbUri.getHost())){
+            dbUrl = dbUrl + "?sslmode=require";
+        }
+
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(config.getString("db.url"));
+        hikariConfig.setJdbcUrl(dbUrl);
         hikariConfig.setMinimumIdle(config.getInt("db.min_pool"));
         hikariConfig.setMaximumPoolSize(config.getInt("db.max_pool"));
-        hikariConfig.setUsername(config.getString("db.user"));
-        hikariConfig.setPassword(config.getString("db.password"));
+        hikariConfig.setUsername(username);
+        hikariConfig.setPassword(password);
         hikariConfig.setConnectionTestQuery("SELECT 1;");
         hikariConfig.setConnectionTimeout(config.getInt("db.connection_timeout"));
-//        hikariConfig.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
 
         HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
 
         return new DefaultConfiguration()
-                .set(SQLDialect.POSTGRES_9_4)
+                .set(SQLDialect.POSTGRES)
                 .set(hikariDataSource);
     }
 

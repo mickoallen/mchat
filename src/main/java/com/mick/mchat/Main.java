@@ -27,6 +27,6 @@ public class Main {
                 })
                 .get("/health/users", context -> context.result(healthHandler.getConnectedUsers()).status(200))
                 .get("/health", context -> context.result(healthHandler.getHealth()).status(200))
-                .start(7070);
+                .start(typesafeConfig.getInt("http.port"));
     }
 }

@@ -7,5 +7,6 @@ public enum OutMessageType {
     CHAT_MESSAGE,
     CURRENT_USER,
     ERROR,
-    USERS_ALL;
+    USERS_ALL,
+    USER_TYPING;
 }

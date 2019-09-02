@@ -42,7 +42,7 @@
           <plugin>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-codegen-maven</artifactId>
-            <version>${version.jooq}</version>
+            <version>3.11.12</version>
             <executions>
               <execution>
                 <goals>
@@ -54,7 +54,7 @@
               <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>9.4.1208</version>
+                <version>42.2.6</version>
               </dependency>
             </dependencies>
             <configuration>
@@ -121,6 +121,6 @@
     </dependency>
   </dependencies>
   <properties>
-    <version.jooq>3.11.11</version.jooq>
+    <version.jooq>3.11.12</version.jooq>
   </properties>
 </project>

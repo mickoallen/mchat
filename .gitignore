@@ -26,5 +26,5 @@ hs_err_pid*
 *.iml
 .idea/*
 
-mchat-ui/dist
+ui/dist
 src/main/resources/public/dist
