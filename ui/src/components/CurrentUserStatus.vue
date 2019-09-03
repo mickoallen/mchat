@@ -1,17 +1,16 @@
 <template>
-<div>
-    <span>Username: {{ username }} Connected: {{ connected }} Logged in: {{ loggedIn }}</span>        
-</div>
-
+    <div>
+        <span>Username: {{ username }} Connected: {{ connected }} Logged in: {{ loggedIn }}</span>
+    </div>
 </template>
 
 <script>
 import store from "../store.js";
 import currentUserGet from "../messages/currentUserGet.json";
+import { setInterval } from "timers";
 
 export default {
-    components: {
-    },
+    components: {},
     computed: {
         connected() {
             return store.getters.getCurrentUserInfo.connected;
@@ -24,12 +23,14 @@ export default {
         }
     },
     mounted() {
-            this.getCurrentUserStatus();
+        store.dispatch("sendMessage", currentUserGet);
+        setInterval(function() {
+            if (this.loggedIn) {
+                store.dispatch("sendMessage", currentUserGet);
+            }
+        }, 4000);
     },
     methods: {
-        getCurrentUserStatus() {
-            store.dispatch("sendMessage", currentUserGet);
-        },
         logout() {
             store.commit("logout");
         }

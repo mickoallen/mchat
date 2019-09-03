@@ -1,5 +1,6 @@
 package com.mick.mchat.websocket.inbound;
 
+import com.mick.mchat.error.AuthenticationFailedException;
 import com.mick.mchat.security.AuthenticationService;
 import com.mick.mchat.security.AuthenticationToken;
 import com.mick.mchat.websocket.WsContextStore;
@@ -60,7 +61,11 @@ public class MChatWebsocketHandler implements WsConnectHandler, WsCloseHandler, 
 
     @Override
     public void handleMessage(@NotNull WsMessageContext wsMessageContext) throws Exception {
-        messageDispatcher.dispatchMessage(wsMessageContext.message(), wsMessageContext);
+        try {
+            messageDispatcher.dispatchMessage(wsMessageContext.message(), wsMessageContext);
+        } catch (AuthenticationFailedException e) {
+            logger.error("Failed to get authentication token from message: {}", wsMessageContext.message(), e);
+        }
     }
 
     @Override

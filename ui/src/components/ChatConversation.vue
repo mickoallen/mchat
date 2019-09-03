@@ -1,41 +1,25 @@
 <template>
     <div>
-        <v-container fluid>
-            <v-row>
-                <v-col cols="12">
-                    <v-container>
-                        <v-card class="mx-auto" flat width="100%">
-                            <v-card-text>
-                                <v-row
-                                    v-for="message in orderedMessages"
-                                    v-bind:key="message.uuid"
-                                    no-gutters
-                                >
-                                    <v-col cols="100%">
-                                        <v-tooltip bottom open-delay="1000" close-delay="200">
-                                            <template v-slot:activator="{ on }">
-                                                <span v-on="on">
-                                                    <span
-                                                        class="body-1 font-weight-bold text--primary"
-                                                    >
-                                                        <b>{{ " " + getUsername(message.userUuid) }}</b>
-                                                    </span>
-                                                    <span
-                                                        class="body-2 text--primary"
-                                                    >{{" " + message.message }}</span>
-                                                </span>
-                                            </template>
-                                            <span>{{ getDateString(message.dateCreated) }} - {{ getTimeString(message.dateCreated) }}</span>
-                                        </v-tooltip>
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                        </v-card>
-                    </v-container>
-                    <div id="currentMessage" />
-                </v-col>
-            </v-row>
-        </v-container>
+        <v-timeline dense>
+            <v-timeline-item v-for="message in orderedMessages" v-bind:key="message.uuid" small>
+                <template v-slot:icon>
+                    <v-avatar>
+                        <img v-bind:src="getAvatarUrl(message.userUuid)"/>
+                    </v-avatar>
+                </template>
+                <v-card class="elevation-5 float-left" max-width="90%">
+                    <v-card-text>
+                        <span class="body-1 font-weight-bold text--primary">
+                            <b>{{ " " + getUsername(message.userUuid) }}</b>
+                        </span>
+                        <span class="body-2 text--primary">{{" " + message.message }}</span>
+
+                        <!-- <span>{{ getDateString(message.dateCreated) }} - {{ getTimeString(message.dateCreated) }}</span> -->
+                    </v-card-text>
+                </v-card>
+            </v-timeline-item>
+            <div id="scrollToHere" />
+        </v-timeline>
 
         <v-footer app inset>
             <v-container>
@@ -101,15 +85,14 @@ export default {
         }
     },
 
-    mounted() {
-        this.scrollToLastMessage();
-    },
-
     updated() {
         this.scrollToLastMessage();
     },
 
     methods: {
+        getAvatarUrl(userUuid){
+            return "https://api.adorable.io/avatars/100/" + this.getUsername(userUuid);
+        }, 
         keyPressed() {
             // var userTypingRequest = userTypingMessage;
             // userTypingMessage.conversationUuid = this.selectedConversation.uuid;
@@ -123,10 +106,14 @@ export default {
             this.newMessage = "";
         },
         getUsername(uuid) {
-            return this.users.filter(user => user.uuid == uuid)[0].username;
+            let user = this.users.filter(user => user.uuid == uuid)[0];
+            if (user == undefined) {
+                return "";
+            }
+            return user.username;
         },
         scrollToLastMessage() {
-            goTo("#currentMessage");
+            goTo("#scrollToHere");
         },
         getTimeString(epoch) {
             return new Date(epoch).toLocaleTimeString("en-US");
@@ -139,13 +126,6 @@ export default {
 </script>
 
 <style scoped>
-.theme--light.v-sheet {
-    background-color: #fafafa;
-}
-
-.theme--dark.v-sheet {
-    background-color: #303030;
-}
 
 .theme--light.v-footer {
     background-color: #fafafa;
@@ -153,5 +133,12 @@ export default {
 
 .theme--dark.v-footer {
     background-color: #303030;
+}
+
+.theme--light.v-timeline::before {
+    display: none;
+}
+.theme--dark.v-timeline::before {
+    display: none;
 }
 </style>

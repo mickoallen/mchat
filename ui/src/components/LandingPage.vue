@@ -1,17 +1,14 @@
 <template>
-    <v-container class="fill-height" fluid>
-        <v-row align="center" justify="center">
-            <v-col cols="12" sm="8" md="4">
-                <v-card class="elevation-10">
+    <v-container>
+        <v-row>
+            <v-col>
+                <v-card class="elevation-10" max-width="400">
                     <v-card-text>
-                        <v-flex xs12>
                             <v-img
-                                :src="require('../assets/logo_transparent.png')"
-                                class="my-3"
+                                :src="require('../assets/logo.png')"
                                 contain
                                 height="200"
                             ></v-img>
-                        </v-flex>
                         <v-form
                             v-if="!createAccountOptions"
                             ref="form"

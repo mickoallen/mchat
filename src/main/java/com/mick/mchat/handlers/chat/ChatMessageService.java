@@ -77,18 +77,11 @@ public class ChatMessageService {
 
         messageDao.insert(message);
 
-        List<UserConversation> userConversations = conversationService.getUserConversations(List.of(inboundChatMessage.getConversationUuid()));
-
-        OutMessageWrapper outMessageWrapper = OutMessageWrapper.of(OutMessageType.CHAT_MESSAGE)
-                .body(ChatMessageMapper.toChatMessageOut(message));
-
-        wsContextStore.getWsContextForUsers(
-                userConversations
-                        .stream()
-                        .map(UserConversation::getUserUuid)
-                        .collect(Collectors.toSet())
-        )
-                .forEach(wsContext -> wsContext.send(outMessageWrapper));
+        conversationService.sendMessageToUsersInConversation(
+                inboundChatMessage.getConversationUuid(),
+                OutMessageWrapper.of(OutMessageType.CHAT_MESSAGE)
+                        .body(ChatMessageMapper.toChatMessageOut(message))
+        );
     }
 
     public void userIsTyping(UserTypingIn userTypingIn, AuthenticationToken authenticationToken) {

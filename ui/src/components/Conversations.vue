@@ -1,7 +1,6 @@
 <template>
     <v-app>
         <chat-conversation v-if="selectedConversation.uuid != undefined" />
-        <new-conversation v-if="showNewConversation" />
 
         <v-container v-if="selectedConversation.uuid == undefined">
             <v-row align="center" justify="center">
@@ -15,14 +14,12 @@
 
 <script>
 import ChatConversation from "./ChatConversation";
-import NewConversation from "./NewConversation";
-import store from "../store.js";
+// import store from "../store.js";
 import { mapState } from "vuex";
 
 export default {
     components: {
-        ChatConversation,
-        NewConversation
+        ChatConversation
     },
 
     data() {
@@ -37,16 +34,12 @@ export default {
             conversations: state => state.conversations,
             isLoggedIn: state => state.currentUser.loggedIn,
             selectedConversation: state => state.selectedConversation,
-            users: state => state.users,
-            showNewConversation: state => state.newConversation
+            users: state => state.users
         })
     },
 
     methods: {
-        clickNewConversation() {
-            store.dispatch("setSelectedConversation", "");
-            store.dispatch("setNewConversation", !this.showNewConversation);
-        }
+        
     }
 };
 </script>

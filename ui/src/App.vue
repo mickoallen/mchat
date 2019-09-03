@@ -4,6 +4,7 @@
             <v-app-bar-nav-icon @click.stop="showConversationsTab = !showConversationsTab"></v-app-bar-nav-icon>
             <v-toolbar-title>MChat</v-toolbar-title>
             <v-spacer />
+            <current-user-status />
             <v-btn @click.stop="logout">Logout</v-btn>
             <v-btn @click.stop="changeTheme">Theme</v-btn>
         </v-app-bar>
@@ -39,29 +40,31 @@
         </v-navigation-drawer>
 
         <v-content>
-            <conversations v-if="isLoggedIn" />
+            <conversations v-if="isLoggedIn && !showNewConversation" />
             <landing-page v-if="!isLoggedIn" />
+            <new-conversation v-if="showNewConversation" />
         </v-content>
     </v-app>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import Vue from 'vue'
+import Vue from "vue";
+import VueNativeSock from "vue-native-websocket";
 
 import store from "./store.js";
 import LandingPage from "./components/LandingPage";
 import Conversations from "./components/Conversations";
-import VueNativeSock from "vue-native-websocket";
+import CurrentUserStatus from "./components/CurrentUserStatus";
+import NewConversation from "./components/NewConversation";
 
 const WS_PORT = 7070;
 
 var WS_URL = "wss://" + window.location.hostname + "/ws";
 
-if(window.location.hostname === "localhost"){
+if (window.location.hostname === "localhost") {
     WS_URL = "ws://" + window.location.hostname + ":" + WS_PORT + "/ws";
 }
-
 
 Vue.use(VueNativeSock, WS_URL, {
     format: "json",
@@ -71,38 +74,57 @@ Vue.use(VueNativeSock, WS_URL, {
 
 export default {
     name: "App",
+
     components: {
-      LandingPage,
-      Conversations
+        LandingPage,
+        Conversations,
+        CurrentUserStatus,
+        NewConversation
     },
+
     computed: {
         ...mapState({
             isLoggedIn: state => state.currentUser.loggedIn,
             conversations: state => state.conversations,
             selectedConversation: state => state.selectedConversation,
-            users: state => state.users
+            users: state => state.users,
+            darkTheme: state => state.darkTheme
         })
     },
 
     data() {
         return {
             showConversationsTab: null,
-            darkMode: false
+            showNewConversation: false
         };
+    },
+
+    mounted() {
+        this.$vuetify.theme.dark = this.darkTheme;
+    },
+
+    watch: {
+        darkTheme() {
+            this.$vuetify.theme.dark = this.darkTheme;
+        }
     },
 
     methods: {
         logout() {
             store.commit("logout");
+            this.showNewConversation = false;
         },
         changeTheme() {
-            this.darkMode = !this.darkMode;
-            this.$vuetify.theme.dark = this.darkMode;
+            store.dispatch("changeTheme", !this.darkTheme);
         },
         selectConversation(conversation) {
-            store.dispatch("setNewConversation", false);
             store.dispatch("setSelectedConversation", conversation);
+            this.showNewConversation = false;
         },
+        clickNewConversation() {
+            store.dispatch("setSelectedConversation", {});
+            this.showNewConversation = !this.showNewConversation;
+        }
     }
 };
 </script>

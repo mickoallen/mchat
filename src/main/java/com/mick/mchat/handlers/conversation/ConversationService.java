@@ -4,6 +4,8 @@ import com.mick.mchat.jooq.model.tables.daos.ConversationDao;
 import com.mick.mchat.jooq.model.tables.daos.UserConversationDao;
 import com.mick.mchat.jooq.model.tables.pojos.Conversation;
 import com.mick.mchat.jooq.model.tables.pojos.UserConversation;
+import com.mick.mchat.websocket.WsContextStore;
+import com.mick.mchat.websocket.outbound.OutMessageWrapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -17,14 +19,16 @@ import java.util.stream.Collectors;
 public class ConversationService {
     private final ConversationDao conversationDao;
     private final UserConversationDao userConversationDao;
+    private final WsContextStore wsContextStore;
 
     @Inject
     public ConversationService(
             final ConversationDao conversationDao,
-            final UserConversationDao userConversationDao
-    ) {
+            final UserConversationDao userConversationDao,
+            final WsContextStore wsContextStore) {
         this.conversationDao = conversationDao;
         this.userConversationDao = userConversationDao;
+        this.wsContextStore = wsContextStore;
     }
 
     public void createConversationForUsers(Conversation conversation, List<UUID> users) {
@@ -76,5 +80,16 @@ public class ConversationService {
 
     public Conversation getConversation(UUID conversationUuid) {
         return conversationDao.fetchOneByUuid(conversationUuid);
+    }
+
+    public void sendMessageToUsersInConversation(UUID conversationUuid, OutMessageWrapper outMessageWrapper){
+        List<UserConversation> userConversations = getUserConversations(List.of(conversationUuid));
+        wsContextStore.getWsContextForUsers(
+                userConversations
+                        .stream()
+                        .map(UserConversation::getUserUuid)
+                        .collect(Collectors.toSet())
+        )
+                .forEach(wsContext -> wsContext.send(outMessageWrapper));
     }
 }
