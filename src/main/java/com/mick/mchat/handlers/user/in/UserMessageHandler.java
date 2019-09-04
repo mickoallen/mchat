@@ -43,7 +43,7 @@ public class UserMessageHandler implements InMessageHandler {
         User user = new User();
         user.setUsername(createUserIn.getUsername());
         user.setPassword(createUserIn.getPassword());
-
+        user.setAvatarUrl(createUserIn.getAvatarUrl());
         userService.createUser(user);
 
         return login(

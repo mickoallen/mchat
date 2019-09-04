@@ -1,18 +1,21 @@
 package com.mick.mchat.websocket;
 
 import io.javalin.websocket.WsContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UserWsContext {
+    private static final Logger logger = LoggerFactory.getLogger(UserWsContext.class);
+
     private final UUID userUuid;
-    private final Map<String, WsContext> wsContexts;
+    private final Map<String, WsContext> wsContexts = new ConcurrentHashMap<>();
 
     public UserWsContext(UUID userUuid) {
         this.userUuid = userUuid;
-        wsContexts = new ConcurrentHashMap<>();
     }
 
     public UUID getUserUuid() {

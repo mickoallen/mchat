@@ -56,7 +56,7 @@ public class MChatWebsocketHandler implements WsConnectHandler, WsCloseHandler, 
 
         logger.debug("User has authentication token in cookie, disconnecting them.");
 
-        wsContextStore.removeUserWsContext(authenticationToken.get().getUserUuid());
+        wsContextStore.removeUserWsContext(authenticationToken.get().getUserUuid(), wsCloseContext.getSessionId());
     }
 
     @Override

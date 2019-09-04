@@ -5,9 +5,6 @@ import com.mick.mchat.jooq.model.tables.pojos.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 public class UserMapper {
     private static final Logger logger = LoggerFactory.getLogger(UserMapper.class);
 
@@ -17,11 +14,7 @@ public class UserMapper {
                 .setUsername(entity.getUsername());
 
         if (entity.getAvatarUrl() != null) {
-            try {
-                dto.setAvatarUrl(new URL(entity.getAvatarUrl()));
-            } catch (MalformedURLException e) {
-                logger.error("Error transforming avatar url for user:" + entity.getUuid(), e);
-            }
+            dto.setAvatarUrl(entity.getAvatarUrl());
         }
 
         return dto;

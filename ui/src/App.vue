@@ -60,10 +60,12 @@ import NewConversation from "./components/NewConversation";
 
 const WS_PORT = 7070;
 
-var WS_URL = "wss://" + window.location.hostname + "/ws";
+var SERVER_URL = "//" + window.location.hostname;
+var WS_URL = "wss:" + SERVER_URL + "/ws";
 
 if (window.location.hostname === "localhost") {
-    WS_URL = "ws://" + window.location.hostname + ":" + WS_PORT + "/ws";
+    SERVER_URL = "//" + window.location.hostname + ":" + WS_PORT;
+    WS_URL = "ws:" + SERVER_URL + "/ws";
 }
 
 Vue.use(VueNativeSock, WS_URL, {
@@ -100,6 +102,7 @@ export default {
     },
 
     mounted() {
+        store.dispatch("serverUrl", SERVER_URL);
         this.$vuetify.theme.dark = this.darkTheme;
     },
 

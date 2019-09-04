@@ -2,7 +2,6 @@ package com.mick.mchat.handlers.user.out;
 
 import com.mick.mchat.websocket.outbound.OutMessage;
 
-import java.net.URL;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -10,7 +9,7 @@ public class UserOut implements OutMessage {
     private UUID uuid;
     private String username;
     private long lastActive;
-    private URL avatarUrl;
+    private String avatarUrl;
 
     public UUID getUuid() {
         return uuid;
@@ -39,11 +38,11 @@ public class UserOut implements OutMessage {
         return this;
     }
 
-    public URL getAvatarUrl() {
+    public String getAvatarUrl() {
         return avatarUrl;
     }
 
-    public UserOut setAvatarUrl(URL avatarUrl) {
+    public UserOut setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
         return this;
     }

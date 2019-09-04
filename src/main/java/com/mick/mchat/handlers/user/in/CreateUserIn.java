@@ -5,6 +5,7 @@ import com.mick.mchat.websocket.inbound.InMessage;
 public class CreateUserIn implements InMessage {
     private String username;
     private String password;
+    private String avatarUrl;
 
     public String getUsername() {
         return username;
@@ -21,6 +22,15 @@ public class CreateUserIn implements InMessage {
 
     public CreateUserIn setPassword(String password) {
         this.password = password;
+        return this;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public CreateUserIn setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
         return this;
     }
 }

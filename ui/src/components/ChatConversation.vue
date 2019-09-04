@@ -3,22 +3,23 @@
         <v-timeline dense>
             <v-timeline-item v-for="message in orderedMessages" v-bind:key="message.uuid" small>
                 <template v-slot:icon>
-                    <v-avatar>
-                        <img v-bind:src="getAvatarUrl(message.userUuid)"/>
+                    <v-avatar tile>
+                        <img v-bind:src="getAvatarUrl(message.userUuid)" />
                     </v-avatar>
                 </template>
-                <v-card class="elevation-5 float-left" max-width="90%">
-                    <v-card-text>
-                        <span class="body-1 font-weight-bold text--primary">
-                            <b>{{ " " + getUsername(message.userUuid) }}</b>
-                        </span>
-                        <span class="body-2 text--primary">{{" " + message.message }}</span>
-
-                        <!-- <span>{{ getDateString(message.dateCreated) }} - {{ getTimeString(message.dateCreated) }}</span> -->
-                    </v-card-text>
+                <v-card class="elevation-3 float-left" max-width="90%">
+                    <div class="ml-2 mr-2">
+                        <span
+                            class="font-weight-light mt-1 mr-2 text-left"
+                        >{{getUsername(message.userUuid) }}</span>
+                        <span class="text-right overline">{{ getTimeString(message.dateCreated) }}</span>
+                        <div class="mb-1 ml-1 text-primary">{{message.message }}</div>
+                    </div>
+                    <!-- <span>{{ getDateString(message.dateCreated) }} - {{ getTimeString(message.dateCreated) }}</span> -->
                 </v-card>
             </v-timeline-item>
             <div id="scrollToHere" />
+            <div v-observe-visibility="visibilityChanged" />
         </v-timeline>
 
         <v-footer app inset>
@@ -30,7 +31,14 @@
                             @submit="sendMessage"
                             onSubmit="return false;"
                         >
-                            <v-text-field hide-details hint outlined v-model="newMessage"></v-text-field>
+                            <v-text-field
+                                aria-autocomplete="off"
+                                autofocus
+                                hide-details
+                                hint
+                                outlined
+                                v-model="newMessage"
+                            ></v-text-field>
                         </v-form>
                     </v-col>
                 </v-row>
@@ -52,15 +60,21 @@
 import store from "../store.js";
 import sendMessage from "../messages/sendMessage.json";
 // import userTypingMessage from "../messages/userTypingMessage.json";
+
 import { mapState } from "vuex";
 import goTo from "vuetify/es5/services/goto";
+import Vue from 'vue'
+import VueObserveVisibility from 'vue-observe-visibility'
+Vue.use(VueObserveVisibility)
 
 export default {
     components: {},
 
     data() {
         return {
-            newMessage: ""
+            newMessage: "",
+            unreadMessages: 0,
+            endIsVisible: true
         };
     },
 
@@ -69,7 +83,8 @@ export default {
             selectedConversation: state => state.selectedConversation,
             currentUser: state => state.currentUser,
             users: state => state.users,
-            usersTyping: state => state.usersTyping
+            usersTyping: state => state.usersTyping,
+            serverUrl: state => state.serverUrl
         }),
         orderedMessages: function() {
             return this.lodash.orderBy(
@@ -85,14 +100,32 @@ export default {
         }
     },
 
+    watch: {
+        selectedConversation(oldSelectedConversation, newSelectionConversation) {
+            let newMessageCount = newSelectionConversation.messages.length - oldSelectedConversation.messages.length;
+            
+            if(!this.endIsVisible){
+                this.unreadMessages = this.unreadMessages + newMessageCount;
+                console.log(this.unreadMessages);
+            }
+        }
+    },
+
     updated() {
         this.scrollToLastMessage();
     },
 
     methods: {
-        getAvatarUrl(userUuid){
-            return "https://api.adorable.io/avatars/100/" + this.getUsername(userUuid);
-        }, 
+        visibilityChanged(isVisible) {
+            this.endIsVisible = isVisible;
+        },
+        getAvatarUrl(userUuid) {
+            let user = this.users.filter(user => user.uuid == userUuid)[0];
+            if (user == undefined) {
+                return "";
+            }
+            return this.serverUrl + user.avatarUrl;
+        },
         keyPressed() {
             // var userTypingRequest = userTypingMessage;
             // userTypingMessage.conversationUuid = this.selectedConversation.uuid;
@@ -126,7 +159,6 @@ export default {
 </script>
 
 <style scoped>
-
 .theme--light.v-footer {
     background-color: #fafafa;
 }
@@ -138,7 +170,12 @@ export default {
 .theme--light.v-timeline::before {
     display: none;
 }
+
 .theme--dark.v-timeline::before {
     display: none;
+}
+
+.v-timeline-item {
+    padding-bottom: 12px;
 }
 </style>

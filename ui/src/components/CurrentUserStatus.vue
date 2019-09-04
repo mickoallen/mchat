@@ -1,6 +1,5 @@
 <template>
     <div>
-        <span>Username: {{ username }} Connected: {{ connected }} Logged in: {{ loggedIn }}</span>
     </div>
 </template>
 

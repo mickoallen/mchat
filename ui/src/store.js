@@ -32,7 +32,8 @@ export default new Vuex.Store({
     newConversation: false,
     selectedConversation: {
     },
-    darkTheme: false
+    darkTheme: false,
+    serverUrl: null
   },
   mutations: {
     SOCKET_ONOPEN(state, event) {
@@ -176,6 +177,9 @@ export default new Vuex.Store({
       }
 
       VueCookie.set(SETTINGS_COOKIE_NAME, JSON.stringify(settings), 365);
+    },
+    serverUrl: (context, url) => {
+      context.state.serverUrl = url;
     }
   },
   getters: {
