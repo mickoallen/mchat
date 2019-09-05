@@ -1,6 +1,8 @@
 # mchat
 google hangouts killer bitch
 
+https://mickchat.herokuapp.com/
+
 # local development
 ### prereqs
 
