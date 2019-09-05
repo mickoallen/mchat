@@ -7,13 +7,8 @@
                     <v-card-text>
                         <v-row justify="center">
                             <div class="ma-2 pa-2">
-                                Conversation name:
-                                <v-text-field v-model="conversationName" />
-                            </div>
-                        </v-row>
-                        <v-row justify="center">
-                            <div class="ma-2 pa-2">
-                                <v-combobox
+                                <v-select
+                                    aria-autocomplete="off"
                                     v-model="selectedUsers"
                                     :items="users"
                                     item-text="username"
@@ -21,7 +16,9 @@
                                     label="Select users"
                                     multiple
                                     chips
-                                ></v-combobox>
+                                    deletable-chips
+                                    
+                                ></v-select>
                             </div>
                         </v-row>
                         <v-row justify="center">
@@ -52,8 +49,7 @@ export default {
 
     data() {
         return {
-            selectedUsers: [],
-            conversationName: ""
+            selectedUsers: []
         };
     },
 
@@ -66,9 +62,13 @@ export default {
     methods: {
         createConversation() {
             var createRequest = createConversationRequest;
-            createRequest.users = this.selectedUsers.map(user => user.uuid);
-            createRequest.name = this.conversationName;
+            createRequest.users = this.selectedUsers;
+
+            var selectedUsernames = this.users.map(user => user.username);
+
+            createRequest.name = selectedUsernames.join(", ");
             store.dispatch("sendMessage", createRequest);
+            store.dispatch("setNewConversation", false);
         }
     }
 };

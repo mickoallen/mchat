@@ -142,13 +142,7 @@ export default {
     computed: {
         ...mapState({
             serverUrl: state => state.serverUrl
-        }),
-        isLoggedIn() {
-            return store.getters.getCurrentUserInfo.isLoggedIn;
-        },
-        getConversations() {
-            return store.getters.getConversations;
-        }
+        })
     },
 
     methods: {

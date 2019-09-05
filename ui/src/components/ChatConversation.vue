@@ -18,8 +18,7 @@
                     <!-- <span>{{ getDateString(message.dateCreated) }} - {{ getTimeString(message.dateCreated) }}</span> -->
                 </v-card>
             </v-timeline-item>
-            <div id="scrollToHere" />
-            <div v-observe-visibility="visibilityChanged" />
+            <div id="scrollToHere" v-observe-visibility="visibilityChanged" />
         </v-timeline>
 
         <v-footer app inset>
@@ -63,52 +62,48 @@ import sendMessage from "../messages/sendMessage.json";
 
 import { mapState } from "vuex";
 import goTo from "vuetify/es5/services/goto";
-import Vue from 'vue'
-import VueObserveVisibility from 'vue-observe-visibility'
-Vue.use(VueObserveVisibility)
+import Vue from "vue";
+import VueObserveVisibility from "vue-observe-visibility";
+Vue.use(VueObserveVisibility);
 
 export default {
     components: {},
 
     data() {
         return {
-            newMessage: "",
-            unreadMessages: 0,
-            endIsVisible: true
+            newMessage: ""
         };
     },
 
     computed: {
         ...mapState({
-            selectedConversation: state => state.selectedConversation,
+            selectedConversationUuid: state => state.selectedConversationUuid,
             currentUser: state => state.currentUser,
             users: state => state.users,
             usersTyping: state => state.usersTyping,
-            serverUrl: state => state.serverUrl
+            serverUrl: state => state.serverUrl,
+            conversations: state => state.conversations
         }),
         orderedMessages: function() {
+            if(this.conversations[this.selectedConversationUuid] == undefined){
+                return [];
+            }
             return this.lodash.orderBy(
-                this.selectedConversation.messages,
+                this.conversations[this.selectedConversationUuid].messages,
                 "dateCreated"
             );
         },
         filteredUsersTyping: function() {
-            if (this.usersTyping[this.selectedConversation.uuid] == undefined) {
-                return [];
-            }
-            return this.usersTyping[this.selectedConversation.uuid].usersTyping;
+            // if (this.usersTyping[this.selectedConversation.uuid] == undefined) {
+            //     return [];
+            // }
+            // return this.usersTyping[this.selectedConversation.uuid].usersTyping;
+            return "";
         }
     },
 
     watch: {
-        selectedConversation(oldSelectedConversation, newSelectionConversation) {
-            let newMessageCount = newSelectionConversation.messages.length - oldSelectedConversation.messages.length;
-            
-            if(!this.endIsVisible){
-                this.unreadMessages = this.unreadMessages + newMessageCount;
-                console.log(this.unreadMessages);
-            }
-        }
+        
     },
 
     updated() {
@@ -117,7 +112,9 @@ export default {
 
     methods: {
         visibilityChanged(isVisible) {
-            this.endIsVisible = isVisible;
+            if(isVisible){
+                store.commit("conversationInView", this.selectedConversationUuid);
+            }
         },
         getAvatarUrl(userUuid) {
             let user = this.users.filter(user => user.uuid == userUuid)[0];
@@ -133,7 +130,7 @@ export default {
         },
         sendMessage() {
             var sendMessageRequest = sendMessage;
-            sendMessageRequest.conversationUuid = this.selectedConversation.uuid;
+            sendMessageRequest.conversationUuid = this.selectedConversationUuid;
             sendMessageRequest.message = this.newMessage;
             store.dispatch("sendMessage", sendMessageRequest);
             this.newMessage = "";

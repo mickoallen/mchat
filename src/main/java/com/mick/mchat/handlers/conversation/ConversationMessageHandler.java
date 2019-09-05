@@ -8,6 +8,7 @@ import com.mick.mchat.jooq.model.tables.pojos.Conversation;
 import com.mick.mchat.jooq.model.tables.pojos.Message;
 import com.mick.mchat.jooq.model.tables.pojos.UserConversation;
 import com.mick.mchat.security.AuthenticationToken;
+import com.mick.mchat.websocket.WsContextStore;
 import com.mick.mchat.websocket.inbound.InMessageHandler;
 import com.mick.mchat.websocket.inbound.InMessageType;
 import com.mick.mchat.websocket.inbound.MChatMessageHandler;
@@ -25,21 +26,22 @@ public class ConversationMessageHandler implements InMessageHandler {
 
     private final ConversationService conversationService;
     private final ChatMessageService chatMessageService;
+    private final WsContextStore wsContextStore;
 
     @Inject
     public ConversationMessageHandler(
             final ConversationService conversationService,
-            final ChatMessageService chatMessageService
-    ) {
+            final ChatMessageService chatMessageService,
+            final WsContextStore wsContextStore) {
         this.conversationService = conversationService;
         this.chatMessageService = chatMessageService;
+        this.wsContextStore = wsContextStore;
     }
 
     @MChatMessageHandler(
-            inType = InMessageType.CREATE_CONVERSATION,
-            outType = OutMessageType.CONVERSATIONS_GET_ALL_RESPONSE
+            inType = InMessageType.CREATE_CONVERSATION
     )
-    public ConversationsOut createConversation(CreateConversationIn createConversationIn, AuthenticationToken authenticationToken) {
+    public void createConversation(CreateConversationIn createConversationIn, AuthenticationToken authenticationToken) {
         //add current user to conversation
         createConversationIn.getUsers()
                 .add(authenticationToken.getUserUuid());
@@ -51,8 +53,16 @@ public class ConversationMessageHandler implements InMessageHandler {
 
         conversationService.createConversationForUsers(conversation, createConversationIn.getUsers());
 
-        //todo send notification to other users!
-        return getAllConversationsForUser(new ConversationGetIn(), authenticationToken);
+        //send this new conversation out to each of the participants
+        for (UUID userUuid : createConversationIn.getUsers()) {
+            wsContextStore.getWsContextForUsers(List.of(userUuid))
+                    .forEach(wsContext -> wsContext.send(
+                            getAllConversationsForUser(
+                                    new ConversationGetIn(),
+                                    new AuthenticationToken().setUserUuid(userUuid))
+                            )
+                    );
+        }
     }
 
     @MChatMessageHandler(

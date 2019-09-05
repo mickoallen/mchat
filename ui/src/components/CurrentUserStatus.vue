@@ -11,15 +11,7 @@ import { setInterval } from "timers";
 export default {
     components: {},
     computed: {
-        connected() {
-            return store.getters.getCurrentUserInfo.connected;
-        },
-        loggedIn() {
-            return store.getters.getCurrentUserInfo.loggedIn;
-        },
-        username() {
-            return store.getters.getCurrentUserInfo.username;
-        }
+
     },
     mounted() {
         store.dispatch("sendMessage", currentUserGet);
