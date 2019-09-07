@@ -1,0 +1,4 @@
+export const CHAT_CONVERSATIONS = "CHAT_CONVERSATIONS";
+export const NEW_CONVERSATION = "NEW_CONVERSATION";
+export const NOTHING = "NOTHING";
+export const PROFILE = "PROFILE";

@@ -16,7 +16,8 @@ public enum InMessageType {
     CREATE_CONVERSATION(CreateConversationIn.class),
     CREATE_USER(CreateUserIn.class, false),
     USERS_GET_ALL(GetAllUsersIn.class),
-    USER_TYPING_MESSAGE(UserTypingIn.class);
+    USER_TYPING_MESSAGE(UserTypingIn.class),
+    UPDATE_USER(UpdateUserIn.class);
 
     private boolean authenticationRequired = true;
     private Class<? extends InMessage> clazz;

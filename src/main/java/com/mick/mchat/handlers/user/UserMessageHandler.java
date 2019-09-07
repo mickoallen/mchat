@@ -1,7 +1,8 @@
-package com.mick.mchat.handlers.user.in;
+package com.mick.mchat.handlers.user;
 
 import com.mick.mchat.handlers.user.UserMapper;
 import com.mick.mchat.handlers.user.UserService;
+import com.mick.mchat.handlers.user.in.*;
 import com.mick.mchat.handlers.user.out.LoginResponseOut;
 import com.mick.mchat.handlers.user.out.UserOut;
 import com.mick.mchat.jooq.model.tables.pojos.User;
@@ -55,6 +56,18 @@ public class UserMessageHandler implements InMessageHandler {
     }
 
     @MChatMessageHandler(
+            inType = InMessageType.UPDATE_USER,
+            outType = OutMessageType.USERS_ALL
+    )
+    public List<UserOut> updateUser(UpdateUserIn updateUserIn, AuthenticationToken authenticationToken) {
+        User user = userService.getUser(authenticationToken.getUserUuid());
+        user.setAvatarUrl(updateUserIn.getAvatarUrl());
+        userService.updateUser(user);
+
+        return getAllUsers(new GetAllUsersIn());
+    }
+
+    @MChatMessageHandler(
             inType = InMessageType.CURRENT_USER_GET,
             outType = OutMessageType.CURRENT_USER
     )
@@ -82,7 +95,7 @@ public class UserMessageHandler implements InMessageHandler {
             inType = InMessageType.USERS_GET_ALL,
             outType = OutMessageType.USERS_ALL
     )
-    public List<UserOut> getAllUsers(GetAllUsersIn getAllUsersIn, AuthenticationToken authenticationToken) {
+    public List<UserOut> getAllUsers(GetAllUsersIn getAllUsersIn) {
         return userService.getAllUsers()
                 .stream()
                 .map(UserMapper::toOut)

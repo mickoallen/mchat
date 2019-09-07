@@ -5,7 +5,7 @@ import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import com.mick.mchat.handlers.chat.ChatMessageHandler;
 import com.mick.mchat.handlers.conversation.ConversationMessageHandler;
-import com.mick.mchat.handlers.user.in.UserMessageHandler;
+import com.mick.mchat.handlers.user.UserMessageHandler;
 import com.mick.mchat.jooq.model.tables.daos.ConversationDao;
 import com.mick.mchat.jooq.model.tables.daos.MessageDao;
 import com.mick.mchat.jooq.model.tables.daos.UserConversationDao;

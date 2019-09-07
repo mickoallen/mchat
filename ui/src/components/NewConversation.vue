@@ -10,7 +10,7 @@
                                 <v-select
                                     aria-autocomplete="off"
                                     v-model="selectedUsers"
-                                    :items="users"
+                                    :items="usersForConversation"
                                     item-text="username"
                                     item-value="uuid"
                                     label="Select users"
@@ -55,8 +55,12 @@ export default {
 
     computed: {
         ...mapState({
-            users: state => state.users
-        })
+            users: state => state.users,
+            currentUser: state => state.currentUser
+        }),
+        usersForConversation(){
+            return this.users.filter(user => user.uuid != this.currentUser.uuid);
+        }
     },
 
     methods: {
@@ -68,7 +72,8 @@ export default {
 
             createRequest.name = selectedUsernames.join(", ");
             store.dispatch("sendMessage", createRequest);
-            store.dispatch("setNewConversation", false);
+            store.commit("changeActiveScreen", "NOTHING");
+            store.commit("showSuccess","Conversation created");
         }
     }
 };

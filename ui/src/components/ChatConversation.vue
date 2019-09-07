@@ -18,7 +18,10 @@
                     <!-- <span>{{ getDateString(message.dateCreated) }} - {{ getTimeString(message.dateCreated) }}</span> -->
                 </v-card>
             </v-timeline-item>
-            <div id="scrollToHere" v-observe-visibility="visibilityChanged" />
+            <div
+                id="scrollToHere"
+                v-observe-visibility="{callback: visibilityChanged, throttle: 300}"
+            />
         </v-timeline>
 
         <v-footer app inset>
@@ -33,9 +36,10 @@
                             <v-text-field
                                 aria-autocomplete="off"
                                 autofocus
-                                hide-details
-                                hint
                                 outlined
+                                clearable
+                                full-width
+                                placeholder="What you wanna say?"
                                 v-model="newMessage"
                             ></v-text-field>
                         </v-form>
@@ -68,7 +72,12 @@ Vue.use(VueObserveVisibility);
 
 export default {
     components: {},
-
+    props: {
+        conversationUuid: {
+            type: String,
+            required: true
+        },
+    },
     data() {
         return {
             newMessage: ""
@@ -82,10 +91,13 @@ export default {
             users: state => state.users,
             usersTyping: state => state.usersTyping,
             serverUrl: state => state.serverUrl,
-            conversations: state => state.conversations
+            conversations: state => state.conversations,
+            conversationInView: state => state.conversationInView
         }),
         orderedMessages: function() {
-            if(this.conversations[this.selectedConversationUuid] == undefined){
+            if (
+                this.conversations[this.selectedConversationUuid] == undefined
+            ) {
                 return [];
             }
             return this.lodash.orderBy(
@@ -94,26 +106,24 @@ export default {
             );
         },
         filteredUsersTyping: function() {
-            // if (this.usersTyping[this.selectedConversation.uuid] == undefined) {
-            //     return [];
-            // }
-            // return this.usersTyping[this.selectedConversation.uuid].usersTyping;
             return "";
         }
     },
 
-    watch: {
-        
+    mounted(){
     },
 
     updated() {
+        this.visibilityChanged(true);
         this.scrollToLastMessage();
     },
 
     methods: {
         visibilityChanged(isVisible) {
-            if(isVisible){
-                store.commit("conversationInView", this.selectedConversationUuid);
+            if (isVisible) {
+                store.commit("conversationInView", this.conversationUuid);
+            }else {
+                store.commit("conversationInView", undefined);
             }
         },
         getAvatarUrl(userUuid) {

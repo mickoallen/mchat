@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.time.Instant;
 
 /**
  * Could use some in mem message broker instead. For this to scale to multiple nodes we'll need that.
@@ -55,12 +56,12 @@ public class MessageDispatcher {
                 wsContext.send(outMessageWrapper);
             }
         } catch (Exception e) {
-            //todo - better error handling
             logger.error("Error!", e);
             wsContext.send(
                     new OutMessageWrapper(OutMessageType.ERROR)
                             .body(new OutMessageError()
-                                    .setMessage(e.getMessage())
+                                    .setMessage(e.getCause().getMessage())
+                                    .setTime(Instant.now().toEpochMilli())
                                     .setStatus(500))
             );
         }

@@ -42,7 +42,7 @@ public class ConversationMapper {
                 .setParticipants(
                         userConversations
                                 .stream()
-                                .map(UserConversation::getUuid)
+                                .map(UserConversation::getUserUuid)
                                 .collect(Collectors.toSet())
                 )
                 .setMessages(

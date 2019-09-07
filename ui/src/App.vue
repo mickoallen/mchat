@@ -19,6 +19,12 @@
                         </v-list-item-icon>
                         <v-list-item-title>Theme</v-list-item-title>
                     </v-list-item>
+                    <v-list-item @click.stop="openProfile">
+                        <v-list-item-icon>
+                            <v-icon>mdi-account</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Profile</v-list-item-title>
+                    </v-list-item>
                     <v-list-item @click.stop="logout">
                         <v-list-item-icon>
                             <v-icon>mdi-logout</v-icon>
@@ -37,19 +43,22 @@
                     @click.stop="selectConversation(conversation.uuid)"
                     :class="`${conversation.uuid == selectedConversationUuid ? 'primary' : null} elevation-${conversation.uuid == selectedConversationUuid ? 2 : 0}` "
                 >
-                    <v-list-item-action v-if="conversation.uuid == selectedConversationUuid">
-                        <v-icon class="mdi-spin">mdi-face-outline</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-action v-if="conversation.uuid != selectedConversationUuid">
-                        <v-icon>mdi-face-outline</v-icon>
+                    <v-list-item-action>
+                        <v-badge color="primary" overlap mode="out-in">
+                            <template v-slot:badge>
+                                <span v-if="conversationsUnreadMessage[conversation.uuid] > 0">{{conversationsUnreadMessage[conversation.uuid]}}</span>
+                            </template>
+                            <v-icon
+                                :class="`${conversation.uuid == selectedConversationUuid ? 'mdi-spin' : null}`"
+                            >mdi-face-outline</v-icon>
+                        </v-badge>
                     </v-list-item-action>
 
                     <v-list-item-content>
-                        <v-list-item-title v-if="showNotification(conversation.uuid)">
-                            <div class="text-primary body-2">{{ conversation.name }}*</div>
-                        </v-list-item-title>
                         <v-list-item-title>
-                            <div class="text-primary body-2">{{ conversation.name }}</div>
+                            <div
+                                class="text-primary body-2"
+                            >{{ conversation.name }}</div>
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
@@ -68,12 +77,14 @@
 
         <v-content>
             <landing-page v-if="!isLoggedIn" />
-            <new-conversation v-if="newConversation" />
-            <chat-conversation v-if="selectedConversationUuid != undefined" />
+            <new-conversation v-if="activeScreen == 'NEW_CONVERSATION' && isLoggedIn" />
+            <chat-conversation
+                :conversationUuid="this.selectedConversationUuid"
+                v-if="activeScreen == 'CHAT_CONVERSATIONS' && isLoggedIn"
+            />
+            <profile v-if="activeScreen == 'PROFILE' && isLoggedIn" />
 
-            <v-container
-                v-if="selectedConversationUuid == undefined && !newConversation && isLoggedIn"
-            >
+            <v-container v-if="activeScreen == 'NOTHING' && isLoggedIn">
                 <v-row align="center" justify="center">
                     <v-card>
                         <v-card-text>Select a conversation</v-card-text>
@@ -81,6 +92,13 @@
                 </v-row>
             </v-container>
         </v-content>
+
+        <v-snackbar color="error" v-model="errorSnackbar">
+            <v-row align="center" justify="center">{{ error.message }}</v-row>
+        </v-snackbar>
+        <v-snackbar color="success" v-model="successSnackbar" v-if="!errorSnackbar">
+            <v-row align="center" justify="center">{{ success.message }}</v-row>
+        </v-snackbar>
     </v-app>
 </template>
 
@@ -94,6 +112,8 @@ import LandingPage from "./components/LandingPage";
 import CurrentUserStatus from "./components/CurrentUserStatus";
 import NewConversation from "./components/NewConversation";
 import ChatConversation from "./components/ChatConversation";
+import Profile from "./components/Profile";
+import { setTimeout } from "timers";
 
 const WS_PORT = 7070;
 
@@ -118,7 +138,8 @@ export default {
         LandingPage,
         CurrentUserStatus,
         NewConversation,
-        ChatConversation
+        ChatConversation,
+        Profile
     },
 
     computed: {
@@ -129,13 +150,20 @@ export default {
             users: state => state.users,
             darkTheme: state => state.darkTheme,
             newConversation: state => state.newConversation,
-            conversationsInView: state => state.conversationsInView
+            conversationInView: state => state.conversationInView,
+            conversationsUnreadMessage: state =>
+                state.conversationsUnreadMessage,
+            error: state => state.error,
+            success: state => state.success,
+            activeScreen: state => state.activeScreen
         })
     },
 
     data() {
         return {
-            showConversationsTab: null
+            showConversationsTab: null,
+            successSnackbar: false,
+            errorSnackbar: false
         };
     },
 
@@ -147,43 +175,37 @@ export default {
     watch: {
         darkTheme() {
             this.$vuetify.theme.dark = this.darkTheme;
+        },
+        error() {
+            this.errorSnackbar = true;
+            setTimeout(function() {
+                3000, (this.errorSnackbar = false);
+            });
+        },
+        success() {
+            this.successSnackbar = true;
+            setTimeout(function() {
+                3000, (this.successSnackbar = false);
+            });
         }
     },
-
     methods: {
         logout() {
             store.commit("logout");
-            store.dispatch("setSelectedConversation", undefined);
-            store.dispatch("setNewConversation", false);
+            store.commit("changeActiveScreen", "NOTHING");
         },
         changeTheme() {
             store.dispatch("changeTheme", !this.darkTheme);
         },
         selectConversation(conversationUuid) {
-            store.dispatch("setSelectedConversation", conversationUuid);
-            store.dispatch("setNewConversation", false);
+            store.commit("setSelectedConversation", conversationUuid);
         },
         clickNewConversation() {
-            store.dispatch("setSelectedConversation", undefined);
-            store.dispatch("setNewConversation", true);
+            store.commit("setSelectedConversation", undefined);
+            store.commit("changeActiveScreen", "NEW_CONVERSATION");
         },
-        showNotification(conversationUuid) {
-            if (this.conversationsInView[conversationUuid] == undefined) {
-                return false;
-            }
-
-            if (
-                this.conversationsInView[conversationUuid].isInView ==
-                    undefined ||
-                this.conversationsInView[conversationUuid].isInView ||
-                this.conversationsInView[conversationUuid].newMessages == 0
-            ) {
-                return false;
-            }
-
-            if(!this.conversationsInView[conversationUuid].isInView && this.conversationsInView[conversationUuid].newMessages > 0){
-                return true;
-            }
+        openProfile() {
+            store.commit("changeActiveScreen", "PROFILE");
         }
     }
 };

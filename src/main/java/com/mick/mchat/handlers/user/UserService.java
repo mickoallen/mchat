@@ -34,6 +34,11 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        List<User> users = userDao.fetchByUsername(user.getUsername());
+        if(!users.isEmpty()){
+            throw new UsernameAlreadyExistsException("Username " + user.getUsername() + " is already taken.");
+        }
+
         user.setUuid(UUID.randomUUID());
         user.setPassword(passwordService.getPasswordHash(user.getPassword()));
         user.setDateCreated(Timestamp.from(Instant.now()));
@@ -71,5 +76,10 @@ public class UserService {
 
     public User login(String username, String password) {
         return getUserFromCredentials(username, password);
+    }
+
+    public User updateUser(User user) {
+        userDao.update(user);
+        return user;
     }
 }

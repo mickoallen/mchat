@@ -1,8 +1,8 @@
 package com.mick.mchat.handlers.conversation;
 
 import com.mick.mchat.handlers.chat.ChatMessageService;
-import com.mick.mchat.handlers.conversation.in.CreateConversationIn;
 import com.mick.mchat.handlers.conversation.in.ConversationGetIn;
+import com.mick.mchat.handlers.conversation.in.CreateConversationIn;
 import com.mick.mchat.handlers.conversation.out.ConversationsOut;
 import com.mick.mchat.jooq.model.tables.pojos.Conversation;
 import com.mick.mchat.jooq.model.tables.pojos.Message;
@@ -13,6 +13,7 @@ import com.mick.mchat.websocket.inbound.InMessageHandler;
 import com.mick.mchat.websocket.inbound.InMessageType;
 import com.mick.mchat.websocket.inbound.MChatMessageHandler;
 import com.mick.mchat.websocket.outbound.OutMessageType;
+import com.mick.mchat.websocket.outbound.OutMessageWrapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -57,10 +58,13 @@ public class ConversationMessageHandler implements InMessageHandler {
         for (UUID userUuid : createConversationIn.getUsers()) {
             wsContextStore.getWsContextForUsers(List.of(userUuid))
                     .forEach(wsContext -> wsContext.send(
-                            getAllConversationsForUser(
-                                    new ConversationGetIn(),
-                                    new AuthenticationToken().setUserUuid(userUuid))
+                            OutMessageWrapper.of(OutMessageType.CONVERSATIONS_GET_ALL_RESPONSE)
+                                    .body(getAllConversationsForUser(
+                                            new ConversationGetIn(),
+                                            new AuthenticationToken().setUserUuid(userUuid))
+                                    )
                             )
+
                     );
         }
     }

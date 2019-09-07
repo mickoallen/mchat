@@ -10,6 +10,7 @@
                             ref="form"
                             v-model="valid"
                             :lazy-validation="false"
+                            @submit="login"
                         >
                             <v-text-field class="ma-2" v-model="username" label="Username" required></v-text-field>
                             <v-text-field
@@ -160,7 +161,6 @@ export default {
             return "/avatar/" + this.avatarCode + "-" + gender + ".png";
         },
         login() {
-            console.log("attempting login");
             loginRequest.username = this.username;
             loginRequest.password = this.passwordOne;
             store.dispatch("sendMessage", loginRequest);
@@ -169,7 +169,6 @@ export default {
             this.$socket.sendObj(conversationsGet);
         },
         createAccount() {
-            console.log("creating account");
             createAccount.username = this.username;
             createAccount.password = this.passwordOne;
             createAccount.avatarUrl = this.getAvatarUrlPath();

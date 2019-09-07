@@ -6,6 +6,7 @@ import conversationsGet from "./messages/conversationsGet.json";
 import usersGet from "./messages/usersGetAll.json";
 import currentUserGet from "./messages/currentUserGet.json";
 import * as MESSAGE_TYPES from './constants/inboundMessageTypes.js';
+import * as ACTIVE_SCREENS from './constants/screens.js';
 
 const AUTH_TOKEN_COOKIE_NAME = "mchat-authentication";
 const SETTINGS_COOKIE_NAME = "mchat-settings";
@@ -29,17 +30,25 @@ export default new Vuex.Store({
     currentUser: {
       loggedIn: false,
       username: "",
-      authenticationToken: ""
+      authenticationToken: "",
+      uuid: undefined
     },
+    darkTheme: false,
+    serverUrl: null,
+
+    activeScreen: ACTIVE_SCREENS.NOTHING,
     usersTyping: {},
     users: [],
+
     conversations: {},
     selectedConversationUuid: null,
-    conversationsInView: {},
+    conversationsUnreadMessage: {},
+    conversationInView: '',
     showConversations: null,
     newConversation: false,
-    darkTheme: false,
-    serverUrl: null
+
+    error: {},
+    success: {}
   },
   mutations: {
     SOCKET_ONOPEN(state, event) {
@@ -51,40 +60,54 @@ export default new Vuex.Store({
     },
     SOCKET_ONERROR(state, event) {
       console.error(state, event);
+      state.socket.isConnected = false;
     },
     SOCKET_ONMESSAGE(state, message) {
       switch (message.type) {
         case MESSAGE_TYPES.ERROR:
           console.error("Error from server: " + message.body.message);
+          state.error = message.body;
           break;
         case MESSAGE_TYPES.CONVERSATIONS_GET_ALL_RESPONSE:
-          state.conversations = arrayToObject(message.body.conversations, "uuid");
+          Vue.set(state, 'conversations', arrayToObject(message.body.conversations, "uuid"));
           state.currentUser.loggedIn = true;
           break;
         case MESSAGE_TYPES.LOGIN_RESPONSE:
           VueCookie.set(message.body.cookieName, message.body.authenticationToken, message.body.cookieExpiry);
           state.currentUser.authenticationToken = message.body.authenticationToken;
           state.currentUser.loggedIn = true;
-          state.showConversations = true;
           this.dispatch('sendMessage', currentUserGet);
           this.dispatch('sendMessage', conversationsGet);
           this.dispatch("sendMessage", usersGet);
           break;
         case MESSAGE_TYPES.CHAT_MESSAGE:
-          if (state.conversations[message.body.conversationUuid] != undefined) {
-            if(state.conversationsInView[message.body.conversationUuid] == undefined){
-              state.conversationsInView[message.body.conversationUuid] = {};
+          var conversationUuid = message.body.conversationUuid;
+          if (state.conversations[conversationUuid] != undefined) {
+            if (state.conversationInView != conversationUuid) {
+              if (state.conversationsUnreadMessage[conversationUuid] == undefined) {
+                Vue.set(state.conversationsUnreadMessage, conversationUuid, 1);
+              } else {
+                Vue.set(state.conversationsUnreadMessage, conversationUuid, state.conversationsUnreadMessage[conversationUuid] + 1);
+              }
             }
-            if(state.conversationsInView[message.body.conversationUuid].newMessages == undefined){
-              state.conversationsInView[message.body.conversationUuid].newMessages = 0;
+
+            state.conversations[conversationUuid].messages.push(message.body);
+            
+            for(var conversation in state.conversations){
+              if(state.conversationsUnreadMessage[conversation] > 0){
+                document.title = "MChat *";
+                break;
+              }
             }
-            state.conversationsInView[message.body.conversationUuid].newMessages++;
-            state.conversations[message.body.conversationUuid].messages.push(message.body);
+          }else{
+            console.error("undefined conversation wtf");
           }
+          
           break;
         case MESSAGE_TYPES.CURRENT_USER:
           state.currentUser.loggedIn = true;
           state.currentUser.username = message.body.username;
+          state.currentUser.uuid = message.body.uuid;
           break;
         case MESSAGE_TYPES.USERS_ALL:
           state.users = message.body;
@@ -122,10 +145,10 @@ export default new Vuex.Store({
       state.socket.reconnectError = true;
     },
     logout(state) {
-      state.showConversations = null;
       VueCookie.delete("mchat-authentication");
       state.currentUser.loggedIn = false;
       state.currentUser.authenticationToken = null;
+      state.activeScreen = ACTIVE_SCREENS.NOTHING;
     },
     initializeConnection(state) {
       state.socket.isConnected = true;
@@ -136,6 +159,7 @@ export default new Vuex.Store({
         var selectedConversationUuidFromCookie = settingsCookie.selectedConversationUuid;
         if (selectedConversationUuidFromCookie != undefined) {
           state.selectedConversationUuid = selectedConversationUuidFromCookie;
+          state.activeScreen = ACTIVE_SCREENS.CHAT_CONVERSATIONS;
         }
 
         this.dispatch('changeTheme', settingsCookie.darkTheme);
@@ -152,11 +176,42 @@ export default new Vuex.Store({
       }
     },
     conversationInView(state, conversationUuid) {
-      if(state.conversationsInView[conversationUuid] == undefined){
-        state.conversationsInView[conversationUuid] = {};
+      if(conversationUuid == undefined){
+        return;
       }
-      state.conversationsInView[conversationUuid].isInView = true;
-      state.conversationsInView[conversationUuid].newMessages = 0;
+      state.conversationInView = conversationUuid;
+      var unreadMessages = state.conversationsUnreadMessage;
+      unreadMessages[conversationUuid] = 0;
+
+      state.conversationsUnreadMessage = unreadMessages;
+      var cleanTitleState = true;
+      //check if we need to clear title state
+      for(var conversation in state.conversations){
+        if(state.conversationsUnreadMessage[conversation] > 0){
+          cleanTitleState = false;
+        }
+      }
+
+      if(cleanTitleState){
+        document.title = "MChat";
+      }
+    },
+    changeActiveScreen(state, newActiveScreen) {
+      state.activeScreen = newActiveScreen;
+    },
+    showSuccess(state, message) {
+      state.success = {
+        message: message,
+        time: new Date().getTime()
+      };
+    },
+    setSelectedConversation(state, conversationUuid){
+      state.selectedConversationUuid = conversationUuid;
+      state.activeScreen = ACTIVE_SCREENS.CHAT_CONVERSATIONS;
+      this.dispatch('saveSettingsToCookie');
+    },
+    setNewConversation(state) {
+      state.activeScreen = ACTIVE_SCREENS.NEW_CONVERSATION;
     }
   },
   actions: {
@@ -164,16 +219,6 @@ export default new Vuex.Store({
       //add auth token to message
       message.authenticationToken = context.state.currentUser.authenticationToken;
       Vue.prototype.$socket.sendObj(message);
-    },
-    setSelectedConversation: (context, conversationUuid) => {
-      context.state.selectedConversationUuid = conversationUuid;
-      context.dispatch('saveSettingsToCookie');
-    },
-    setShowConversations: (context, showConversationsState) => {
-      context.state.showConversations = showConversationsState;
-    },
-    setNewConversation: (context, newConversationState) => {
-      context.state.newConversation = newConversationState;
     },
     changeTheme: (context, newDarkThemeSetting) => {
       context.state.darkTheme = newDarkThemeSetting;
