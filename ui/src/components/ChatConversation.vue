@@ -1,10 +1,28 @@
 <template>
     <div>
+        <v-banner style="z-index: 3" single-line sticky>
+            <v-slide-group show-arrows>
+                <v-slide-item v-for="user of onlineUsers" v-bind:key="user.uuid">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                            <div v-on="on">
+                                <v-chip pill :disabled="!user.online">
+                                    <v-avatar tile>
+                                        <img v-bind:src="getAvatarUrl(user.avatarUrl)" />
+                                    </v-avatar>
+                                </v-chip>
+                            </div>
+                        </template>
+                        <span>{{user.username}} is {{user.online ? 'online' : 'offline'}}</span>
+                    </v-tooltip>
+                </v-slide-item>
+            </v-slide-group>
+        </v-banner>
         <v-timeline dense>
             <v-timeline-item v-for="message in orderedMessages" v-bind:key="message.uuid" small>
                 <template v-slot:icon>
                     <v-avatar tile>
-                        <img v-bind:src="getAvatarUrl(message.userUuid)" />
+                        <img v-bind:src="getAvatarUrlForUser(message.userUuid)" />
                     </v-avatar>
                 </template>
                 <v-card class="elevation-3 float-left" max-width="90%">
@@ -23,13 +41,11 @@
                 v-observe-visibility="{callback: visibilityChanged, throttle: 300}"
             />
         </v-timeline>
-
         <v-footer app inset>
             <v-container>
                 <v-row dense>
                     <v-col cols="100%">
                         <v-form
-                            @keyup.native="keyPressed"
                             @submit="sendMessage"
                             onSubmit="return false;"
                         >
@@ -76,7 +92,7 @@ export default {
         conversationUuid: {
             type: String,
             required: true
-        },
+        }
     },
     data() {
         return {
@@ -94,6 +110,22 @@ export default {
             conversations: state => state.conversations,
             conversationInView: state => state.conversationInView
         }),
+        onlineUsers() {
+            var currentConversation = this.conversations[this.conversationUuid];
+
+            var usersInCurrentConversation = [];
+            for (var userUuid of currentConversation.participants) {
+                var userInTheConversation = this.users.filter(
+                    userFromServer => userFromServer.uuid == userUuid
+                )[0];
+
+                if (userInTheConversation != undefined) {
+                    usersInCurrentConversation.push(userInTheConversation);
+                }
+            }
+
+            return usersInCurrentConversation;
+        },
         orderedMessages: function() {
             if (
                 this.conversations[this.selectedConversationUuid] == undefined
@@ -110,8 +142,7 @@ export default {
         }
     },
 
-    mounted(){
-    },
+    mounted() {},
 
     updated() {
         this.visibilityChanged(true);
@@ -122,16 +153,19 @@ export default {
         visibilityChanged(isVisible) {
             if (isVisible) {
                 store.commit("conversationInView", this.conversationUuid);
-            }else {
+            } else {
                 store.commit("conversationInView", undefined);
             }
         },
-        getAvatarUrl(userUuid) {
+        getAvatarUrlForUser(userUuid) {
             let user = this.users.filter(user => user.uuid == userUuid)[0];
             if (user == undefined) {
                 return "";
             }
             return this.serverUrl + user.avatarUrl;
+        },
+        getAvatarUrl(userAvatarUrl) {
+            return this.serverUrl + userAvatarUrl;
         },
         keyPressed() {
             // var userTypingRequest = userTypingMessage;

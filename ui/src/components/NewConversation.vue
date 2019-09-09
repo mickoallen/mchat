@@ -67,6 +67,8 @@ export default {
         createConversation() {
             var createRequest = createConversationRequest;
             createRequest.users = this.selectedUsers;
+            
+            this.selectedUsers = [];
 
             var selectedUsernames = this.users.map(user => user.username);
 
@@ -74,6 +76,7 @@ export default {
             store.dispatch("sendMessage", createRequest);
             store.commit("changeActiveScreen", "NOTHING");
             store.commit("showSuccess","Conversation created");
+            //reset selected users
         }
     }
 };

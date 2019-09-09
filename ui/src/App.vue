@@ -1,10 +1,11 @@
 <template>
     <v-app>
-        <v-app-bar app clipped-left v-if="isLoggedIn">
+        <v-app-bar dense app clipped-left v-if="isLoggedIn">
             <v-app-bar-nav-icon @click.stop="showConversationsTab = !showConversationsTab"></v-app-bar-nav-icon>
             <v-toolbar-title>MChat</v-toolbar-title>
             <v-spacer />
             <current-user-status />
+
             <v-menu bottom left>
                 <template v-slot:activator="{ on }">
                     <v-btn icon v-on="on">
@@ -46,7 +47,9 @@
                     <v-list-item-action>
                         <v-badge color="primary" overlap mode="out-in">
                             <template v-slot:badge>
-                                <span v-if="conversationsUnreadMessage[conversation.uuid] > 0">{{conversationsUnreadMessage[conversation.uuid]}}</span>
+                                <span
+                                    v-if="conversationsUnreadMessage[conversation.uuid] > 0"
+                                >{{conversationsUnreadMessage[conversation.uuid]}}</span>
                             </template>
                             <v-icon
                                 :class="`${conversation.uuid == selectedConversationUuid ? 'mdi-spin' : null}`"
@@ -56,9 +59,7 @@
 
                     <v-list-item-content>
                         <v-list-item-title>
-                            <div
-                                class="text-primary body-2"
-                            >{{ conversation.name }}</div>
+                            <div class="text-primary body-2">{{ conversation.name }}</div>
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
@@ -107,13 +108,14 @@ import { mapState } from "vuex";
 import Vue from "vue";
 import VueNativeSock from "vue-native-websocket";
 
+import usersGet from "./messages/usersGetAll.json";
 import store from "./store.js";
 import LandingPage from "./components/LandingPage";
 import CurrentUserStatus from "./components/CurrentUserStatus";
 import NewConversation from "./components/NewConversation";
 import ChatConversation from "./components/ChatConversation";
 import Profile from "./components/Profile";
-import { setTimeout } from "timers";
+import { setTimeout, setInterval } from "timers";
 
 const WS_PORT = 7070;
 
@@ -155,8 +157,12 @@ export default {
                 state.conversationsUnreadMessage,
             error: state => state.error,
             success: state => state.success,
-            activeScreen: state => state.activeScreen
-        })
+            activeScreen: state => state.activeScreen,
+            serverUrl: state => state.serverUrl
+        }),
+        onlineUsers() {
+            return this.users.filter(user => user.online);
+        }
     },
 
     data() {
@@ -170,6 +176,10 @@ export default {
     mounted() {
         store.dispatch("serverUrl", SERVER_URL);
         this.$vuetify.theme.dark = this.darkTheme;
+
+        setInterval(function() {
+            store.dispatch("getUsers", usersGet);
+        }, 4000);
     },
 
     watch: {
@@ -206,6 +216,9 @@ export default {
         },
         openProfile() {
             store.commit("changeActiveScreen", "PROFILE");
+        },
+        getAvatarUrl(userAvatarUrl) {
+            return this.serverUrl + userAvatarUrl;
         }
     }
 };

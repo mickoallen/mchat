@@ -25,7 +25,7 @@ public class ConversationMapper {
                                                         .stream()
                                                         .filter(
                                                                 userConversation ->
-                                                                        conversation.getUuid().equals(userConversation.getUuid())
+                                                                        conversation.getUuid().equals(userConversation.getConversationUuid())
                                                         ).collect(Collectors.toList()),
                                                 messagesForConversations.get(conversation.getUuid())
                                         )

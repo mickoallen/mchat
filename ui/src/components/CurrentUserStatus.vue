@@ -1,19 +1,25 @@
 <template>
     <div>
-        <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-                <v-icon v-on="on" v-if="socket.isConnected">mdi-access-point</v-icon>
-            </template>
-            <span>Connected to MChat servers</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-                <v-icon v-if="!socket.isConnected">mdi-access-point-network-off</v-icon>
-            </template>
-            <span>Not connected to MChat servers</span>
-        </v-tooltip>
-        
-        
+        <div v-if="socket.isConnected">
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                    <div v-on="on">
+                        <v-icon>mdi-access-point</v-icon>
+                    </div>
+                </template>
+                <span>Connected to MChat servers</span>
+            </v-tooltip>
+        </div>
+        <div v-if="!socket.isConnected">
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                    <div v-on="on">
+                        <v-icon>mdi-access-point-network-off</v-icon>
+                    </div>
+                </template>
+                <span>Not connected to MChat servers</span>
+            </v-tooltip>
+        </div>
     </div>
 </template>
 

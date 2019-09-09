@@ -1,7 +1,5 @@
 package com.mick.mchat.handlers.user;
 
-import com.mick.mchat.handlers.user.UserMapper;
-import com.mick.mchat.handlers.user.UserService;
 import com.mick.mchat.handlers.user.in.*;
 import com.mick.mchat.handlers.user.out.LoginResponseOut;
 import com.mick.mchat.handlers.user.out.UserOut;
@@ -13,6 +11,7 @@ import com.mick.mchat.websocket.inbound.InMessageHandler;
 import com.mick.mchat.websocket.inbound.InMessageType;
 import com.mick.mchat.websocket.inbound.MChatMessageHandler;
 import com.mick.mchat.websocket.outbound.OutMessageType;
+import com.mick.mchat.websocket.outbound.OutMessageWrapper;
 import io.javalin.websocket.WsContext;
 
 import javax.inject.Inject;
@@ -47,6 +46,9 @@ public class UserMessageHandler implements InMessageHandler {
         user.setAvatarUrl(createUserIn.getAvatarUrl());
         userService.createUser(user);
 
+        //tell everyone user has been created
+        wsContextStore.sendMessageToAllUsers(OutMessageWrapper.of(OutMessageType.USER_CREATED).body(UserMapper.toOut(user)));
+
         return login(
                 new UserLoginIn()
                         .setUsername(createUserIn.getUsername())
@@ -63,6 +65,8 @@ public class UserMessageHandler implements InMessageHandler {
         User user = userService.getUser(authenticationToken.getUserUuid());
         user.setAvatarUrl(updateUserIn.getAvatarUrl());
         userService.updateUser(user);
+
+        wsContextStore.sendMessageToAllUsers(OutMessageWrapper.of(OutMessageType.USER_UPDATED).body(UserMapper.toOut(user)));
 
         return getAllUsers(new GetAllUsersIn());
     }
@@ -85,6 +89,9 @@ public class UserMessageHandler implements InMessageHandler {
         User user = userService.login(userLoginIn.getUsername(), userLoginIn.getPassword());
         String token = authenticationService.createToken(user);
 
+        //tell users user logged in
+        wsContextStore.sendMessageToAllUsers(OutMessageWrapper.of(OutMessageType.USER_LOGGED_IN).body(UserMapper.toOut(user)));
+
         wsContextStore.addUserWsContext(user.getUuid(), wsContext);
 
         return new LoginResponseOut()
@@ -99,6 +106,14 @@ public class UserMessageHandler implements InMessageHandler {
         return userService.getAllUsers()
                 .stream()
                 .map(UserMapper::toOut)
+                .map(userOut -> userOut.setOnline(wsContextStore.userIsOnline(userOut.getUuid())))
                 .collect(Collectors.toList());
+    }
+
+    @MChatMessageHandler(
+            inType = InMessageType.LOGOUT
+    )
+    public void logout(LogoutIn logoutIn, AuthenticationToken authenticationToken) {
+        wsContextStore.removeUserWsContext(authenticationToken.getUserUuid());
     }
 }

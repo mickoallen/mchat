@@ -48,15 +48,7 @@ public class MChatWebsocketHandler implements WsConnectHandler, WsCloseHandler, 
     @Override
     public void handleClose(@NotNull WsCloseContext wsCloseContext) throws Exception {
         logger.debug("Websocket connection closed");
-        Optional<AuthenticationToken> authenticationToken = getValidAuthenticationToken(wsCloseContext);
-
-        if (authenticationToken.isEmpty()) {
-            return;
-        }
-
-        logger.debug("User has authentication token in cookie, disconnecting them.");
-
-        wsContextStore.removeUserWsContext(authenticationToken.get().getUserUuid(), wsCloseContext.getSessionId());
+        wsContextStore.removeUserWsContext(wsCloseContext.getSessionId());
     }
 
     @Override

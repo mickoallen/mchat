@@ -1,14 +1,12 @@
 package com.mick.mchat.websocket;
 
-import com.talanlabs.avatargenerator.Avatar;
-import com.talanlabs.avatargenerator.eightbit.EightBitAvatar;
+import com.mick.mchat.websocket.outbound.OutMessageWrapper;
 import io.javalin.websocket.WsContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -75,5 +73,34 @@ public class WsContextStore {
 
     public Map<UUID, UserWsContext> getContextMap() {
         return userWsContextMap;
+    }
+
+    public void sendMessageToAllUsers(OutMessageWrapper outMessageWrapper) {
+        userWsContextMap.values()
+                .stream()
+                .flatMap(userWsContext -> userWsContext.getWsContexts().values().stream())
+                .filter(Objects::nonNull)
+                .forEach(wsContext -> wsContext.send(outMessageWrapper));
+    }
+
+    public boolean userIsOnline(UUID uuid) {
+        if(!userWsContextMap.containsKey(uuid)){
+            return false;
+        }
+
+        return userWsContextMap.get(uuid)
+                .getWsContexts()
+                .values()
+                .stream()
+                .anyMatch(Objects::nonNull);
+    }
+
+    public void removeUserWsContext(String sessionId) {
+        userWsContextMap.values()
+                .forEach(userWsContext -> userWsContext.removeWsContext(sessionId));
+    }
+
+    public void removeUserWsContext(UUID userUuid) {
+        userWsContextMap.remove(userUuid);
     }
 }

@@ -25,7 +25,7 @@ import static org.jooq.impl.DSL.field;
 @Singleton
 public class ChatMessageService {
     private final MessageDao messageDao;
-    private final int messageFetchLimit = 100;
+    private final int messageFetchLimit = 40;
     private final WsContextStore wsContextStore;
     private final ConversationService conversationService;
 

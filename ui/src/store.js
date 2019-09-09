@@ -5,6 +5,7 @@ import VueCookie from "vue-cookie";
 import conversationsGet from "./messages/conversationsGet.json";
 import usersGet from "./messages/usersGetAll.json";
 import currentUserGet from "./messages/currentUserGet.json";
+import logoutMessage from "./messages/logoutMessage.json";
 import * as MESSAGE_TYPES from './constants/inboundMessageTypes.js';
 import * as ACTIVE_SCREENS from './constants/screens.js';
 
@@ -39,7 +40,7 @@ export default new Vuex.Store({
     activeScreen: ACTIVE_SCREENS.NOTHING,
     usersTyping: {},
     users: [],
-
+    onlineUsers: [],
     conversations: {},
     selectedConversationUuid: null,
     conversationsUnreadMessage: {},
@@ -92,6 +93,9 @@ export default new Vuex.Store({
             }
 
             state.conversations[conversationUuid].messages.push(message.body);
+            if(state.conversations[conversationUuid].messages.length > 40){
+              state.conversations[conversationUuid].messages.shift();
+            }
             
             for(var conversation in state.conversations){
               if(state.conversationsUnreadMessage[conversation] > 0){
@@ -112,25 +116,17 @@ export default new Vuex.Store({
         case MESSAGE_TYPES.USERS_ALL:
           state.users = message.body;
           break;
-        case MESSAGE_TYPES.USER_TYPING:
-          // var id = Math.random().toString(36);
-
-          // if (state.usersTyping[message.body.conversationUuid] == undefined) {
-          //   state.usersTyping[message.body.conversationUuid] = { usersTyping: [] };
-          // }
-
-          // state.usersTyping[message.body.conversationUuid].usersTyping.push(
-          //   {
-          //     id: id,
-          //     userUuid: message.body.userUuid
-          //   }
-          // );
-
-          setTimeout(function () {
-            //remove that record after 1 second
-            // state.usersTyping[message.body.conversationUuid].usersTyping =
-            // state.usersTyping[message.body.conversationUuid].usersTyping.filter(userTyping => userTyping.id != id);
-          }, 1000);
+        case MESSAGE_TYPES.USER_CREATED:
+          this.dispatch("sendMessage", usersGet);
+          this.commit("showSuccess","User " + message.body.username + " created");
+          break;
+        case MESSAGE_TYPES.USER_UPDATED:
+            this.dispatch("sendMessage", usersGet);
+            break;
+        case MESSAGE_TYPES.USER_LOGGED_IN:
+            this.commit("showSuccess",message.body.username + " logged in");
+            break;
+        case MESSAGE_TYPES.USERS_ONLINE_ALL:
           break;
 
       }
@@ -149,6 +145,7 @@ export default new Vuex.Store({
       state.currentUser.loggedIn = false;
       state.currentUser.authenticationToken = null;
       state.activeScreen = ACTIVE_SCREENS.NOTHING;
+      this.dispatch('sendMessage', logoutMessage);
     },
     initializeConnection(state) {
       state.socket.isConnected = true;
@@ -215,6 +212,11 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    getUsers: (context) => {
+      if(context.state.currentUser.loggedIn){
+        context.dispatch("sendMessage", usersGet);
+      }
+    },
     sendMessage: (context, message) => {
       //add auth token to message
       message.authenticationToken = context.state.currentUser.authenticationToken;

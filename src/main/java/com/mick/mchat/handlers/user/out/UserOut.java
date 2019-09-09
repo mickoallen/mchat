@@ -10,6 +10,7 @@ public class UserOut implements OutMessage {
     private String username;
     private long lastActive;
     private String avatarUrl;
+    private boolean isOnline = false;
 
     public UUID getUuid() {
         return uuid;
@@ -44,6 +45,15 @@ public class UserOut implements OutMessage {
 
     public UserOut setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+        return this;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public UserOut setOnline(boolean online) {
+        isOnline = online;
         return this;
     }
 
