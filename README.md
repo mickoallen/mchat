@@ -12,13 +12,19 @@ Cool things I haven't done yet...
 - Typing indicator
 - Image rendering (both uploaded and from a URL)
 
+
 Chatting:
+
 <img src="/assets/lightTheme.png" width="500px" /> 
 
+
 Account creation:
+
 <img src="/assets/accountCreation.png" width="500px" />
 
+
 Dark theme:
+
 <img src="/assets/darkTheme.png" width="500px" />
 
 # local development
