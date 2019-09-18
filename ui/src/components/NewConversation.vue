@@ -67,10 +67,7 @@ export default {
         createConversation() {
             var createRequest = createConversationRequest;
             createRequest.users = this.selectedUsers;
-        
-            var selectedUsernames = this.users.filter(user => this.selectedUsers.includes(user.uuid)).map(user => user.username);
-
-            createRequest.name = selectedUsernames.join(", ");
+            createRequest.name = "this field is now deprecated";
             store.dispatch("sendMessage", createRequest);
             store.commit("changeActiveScreen", "NOTHING");
             store.commit("showSuccess","Conversation created");

@@ -59,7 +59,7 @@
 
                     <v-list-item-content>
                         <v-list-item-title>
-                            <div class="text-primary body-2">{{ conversation.name }}</div>
+                            <div class="text-primary body-2">{{ getConversationName(conversation) }}</div>
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
@@ -219,6 +219,12 @@ export default {
         },
         getAvatarUrl(userAvatarUrl) {
             return this.serverUrl + userAvatarUrl;
+        },
+        getConversationName(conversation){
+            var usersInConversation = conversation.participants
+                .map(participant => this.users.filter(user => user.uuid == participant)[0]);
+            
+            return usersInConversation.map(user => user.username).join(", ");
         }
     }
 };
