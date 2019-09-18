@@ -12,9 +12,9 @@ Cool things I haven't done yet...
 - Typing indicator
 - Image rendering (both uploaded and from a URL)
 
-<img src="/assets/lightTheme.png" width="300px" /> 
-<img src="/assets/accountCreation.png" width="300px" />
-<img src="/assets/darkTheme.png" width="300px" />
+<img src="/assets/lightTheme.png" width="500px" /> 
+<img src="/assets/accountCreation.png" width="500px" />
+<img src="/assets/darkTheme.png" width="500px" />
 
 # local development
 ### prereqs
