@@ -1,16 +1,12 @@
 # mchat
 google hangouts killer - https://mickchat.herokuapp.com/
 
-Features...
+#### Features...
 - Real-time chat
 - Account creation with random avatar generation
 - User online status
 - Light and dark themes
 - Notifications, with unread message count
-
-Cool things I haven't done yet...
-- Typing indicator
-- Image rendering (both uploaded and from a URL)
 
 
 Chatting:
@@ -26,6 +22,11 @@ Account creation:
 Dark theme:
 
 <img src="/assets/darkTheme.png" width="500px" />
+
+
+#### Cool things I haven't done yet...
+- Typing indicator
+- Image rendering (both uploaded and from a URL)
 
 # local development
 ### prereqs
