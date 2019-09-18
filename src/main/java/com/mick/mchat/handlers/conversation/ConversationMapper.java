@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * For mapping conversations
+ */
 public class ConversationMapper {
     public static ConversationsOut toConversationsOut(List<Conversation> conversations, List<UserConversation> userConversations, Map<UUID, List<Message>> messagesForConversations) {
         return new ConversationsOut()
@@ -21,12 +24,7 @@ public class ConversationMapper {
                                 .map(conversation ->
                                         toConversationOut(
                                                 conversation,
-                                                userConversations
-                                                        .stream()
-                                                        .filter(
-                                                                userConversation ->
-                                                                        conversation.getUuid().equals(userConversation.getConversationUuid())
-                                                        ).collect(Collectors.toList()),
+                                                getUserConversations(conversation, userConversations),
                                                 messagesForConversations.get(conversation.getUuid())
                                         )
                                 )
@@ -51,5 +49,14 @@ public class ConversationMapper {
                                 .map(ChatMessageMapper::toChatMessageOut)
                                 .collect(Collectors.toSet())
                 );
+    }
+
+    private static List<UserConversation> getUserConversations(Conversation conversation, List<UserConversation> userConversations){
+        return userConversations
+                .stream()
+                .filter(
+                        userConversation ->
+                                conversation.getUuid().equals(userConversation.getConversationUuid())
+                ).collect(Collectors.toList());
     }
 }

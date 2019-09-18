@@ -1,9 +1,8 @@
 package com.mick.mchat.websocket.inbound;
 
 import com.mick.mchat.handlers.chat.in.ChatMessageIn;
-import com.mick.mchat.handlers.chat.in.UserTypingIn;
-import com.mick.mchat.handlers.conversation.in.CreateConversationIn;
 import com.mick.mchat.handlers.conversation.in.ConversationGetIn;
+import com.mick.mchat.handlers.conversation.in.CreateConversationIn;
 import com.mick.mchat.handlers.user.in.*;
 
 public enum InMessageType {
@@ -16,14 +15,14 @@ public enum InMessageType {
     CREATE_CONVERSATION(CreateConversationIn.class),
     CREATE_USER(CreateUserIn.class, false),
     USERS_GET_ALL(GetAllUsersIn.class),
-    USER_TYPING_MESSAGE(UserTypingIn.class),
     UPDATE_USER(UpdateUserIn.class),
     LOGOUT(LogoutIn.class);
 
     private boolean authenticationRequired = true;
     private Class<? extends InMessage> clazz;
 
-    InMessageType(){}
+    InMessageType() {
+    }
 
     InMessageType(Class<? extends InMessage> clazz) {
         this.clazz = clazz;
@@ -38,7 +37,7 @@ public enum InMessageType {
         return authenticationRequired;
     }
 
-    public Class<? extends InMessage> getClazz(){
+    public Class<? extends InMessage> getClazz() {
         return clazz;
     }
 }

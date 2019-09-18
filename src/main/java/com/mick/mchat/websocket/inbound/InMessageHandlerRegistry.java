@@ -16,6 +16,8 @@ import java.util.Set;
 /**
  * Scans all {@link InMessageHandler} classes for {@link MChatMessageHandler} annotated methods and registers them as lambdas
  * for the given {@link InMessageType}.
+ *
+ * A little bit of reflection never hurt anyone.
  */
 public class InMessageHandlerRegistry {
     private static final Logger logger = LoggerFactory.getLogger(InMessageHandlerRegistry.class);

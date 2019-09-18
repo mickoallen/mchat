@@ -1,7 +1,5 @@
 package com.mick.mchat.handlers.conversation;
 
-import com.mick.mchat.jooq.model.tables.daos.ConversationDao;
-import com.mick.mchat.jooq.model.tables.daos.UserConversationDao;
 import com.mick.mchat.jooq.model.tables.pojos.Conversation;
 import com.mick.mchat.jooq.model.tables.pojos.UserConversation;
 import com.mick.mchat.websocket.WsContextStore;
@@ -9,32 +7,24 @@ import com.mick.mchat.websocket.outbound.OutMessageWrapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Singleton
 public class ConversationService {
-    private final ConversationDao conversationDao;
-    private final UserConversationDao userConversationDao;
+    private final ConversationRepository conversationRepository;
     private final WsContextStore wsContextStore;
 
     @Inject
     public ConversationService(
-            final ConversationDao conversationDao,
-            final UserConversationDao userConversationDao,
+            final ConversationRepository conversationRepository,
             final WsContextStore wsContextStore) {
-        this.conversationDao = conversationDao;
-        this.userConversationDao = userConversationDao;
+        this.conversationRepository = conversationRepository;
         this.wsContextStore = wsContextStore;
     }
 
     public void createConversationForUsers(Conversation conversation, List<UUID> users) {
-        Timestamp now = new Timestamp(Instant.now().toEpochMilli());
-        conversation.setDateCreated(now);
-
         if (users.size() <= 2) {
             conversation.setType("PRIVATE");
         } else {
@@ -43,46 +33,18 @@ public class ConversationService {
 
         conversation.setUuid(UUID.randomUUID());
 
-        conversationDao.insert(conversation);
-        userConversationDao.insert(
-                users
-                        .stream()
-                        .map(uuid -> {
-                            UserConversation userConversation = new UserConversation();
-                            userConversation.setUuid(UUID.randomUUID());
-                            userConversation.setUserUuid(uuid);
-                            userConversation.setConversationUuid(conversation.getUuid());
-                            userConversation.setDateCreated(now);
-                            return userConversation;
-                        }).collect(Collectors.toList())
-        );
+        conversationRepository.createConversation(conversation, users);
     }
 
     public List<Conversation> getAllConversationsForUser(UUID userUuid) {
-        List<UserConversation> userConversations = userConversationDao.fetchByUserUuid(userUuid);
-
-        if (userConversations.isEmpty()) {
-            return List.of();
-        }
-
-        return conversationDao.fetchByUuid(
-                userConversations
-                        .stream()
-                        .map(UserConversation::getConversationUuid)
-                        .collect(Collectors.toList())
-                        .toArray(UUID[]::new)
-        );
+        return conversationRepository.getConversationsForUser(userUuid);
     }
 
     public List<UserConversation> getUserConversations(List<UUID> conversationUuids) {
-        return userConversationDao.fetchByConversationUuid(conversationUuids.toArray(UUID[]::new));
+        return conversationRepository.getUserConversations(conversationUuids);
     }
 
-    public Conversation getConversation(UUID conversationUuid) {
-        return conversationDao.fetchOneByUuid(conversationUuid);
-    }
-
-    public void sendMessageToUsersInConversation(UUID conversationUuid, OutMessageWrapper outMessageWrapper){
+    public void sendMessageToUsersInConversation(UUID conversationUuid, OutMessageWrapper outMessageWrapper) {
         List<UserConversation> userConversations = getUserConversations(List.of(conversationUuid));
         wsContextStore.getWsContextForUsers(
                 userConversations

@@ -114,6 +114,6 @@ public class UserMessageHandler implements InMessageHandler {
             inType = InMessageType.LOGOUT
     )
     public void logout(LogoutIn logoutIn, AuthenticationToken authenticationToken) {
-        wsContextStore.removeUserWsContext(authenticationToken.getUserUuid());
+        wsContextStore.removeUserWsContextForUserUUID(authenticationToken.getUserUuid());
     }
 }

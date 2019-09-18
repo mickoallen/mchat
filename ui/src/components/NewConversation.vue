@@ -67,16 +67,14 @@ export default {
         createConversation() {
             var createRequest = createConversationRequest;
             createRequest.users = this.selectedUsers;
-            
-            this.selectedUsers = [];
-
-            var selectedUsernames = this.users.map(user => user.username);
+        
+            var selectedUsernames = this.users.filter(user => this.selectedUsers.includes(user.uuid)).map(user => user.username);
 
             createRequest.name = selectedUsernames.join(", ");
             store.dispatch("sendMessage", createRequest);
             store.commit("changeActiveScreen", "NOTHING");
             store.commit("showSuccess","Conversation created");
-            //reset selected users
+            this.selectedUsers = [];
         }
     }
 };

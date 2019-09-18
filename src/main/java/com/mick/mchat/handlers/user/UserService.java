@@ -3,9 +3,7 @@ package com.mick.mchat.handlers.user;
 import com.mick.mchat.error.NotFoundException;
 import com.mick.mchat.jooq.model.tables.daos.UserDao;
 import com.mick.mchat.jooq.model.tables.pojos.User;
-import com.mick.mchat.security.AuthenticationService;
 import com.mick.mchat.security.PasswordService;
-import com.mick.mchat.websocket.WsContextStore;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,22 +18,19 @@ import static org.jooq.impl.DSL.field;
 public class UserService {
     private final UserDao userDao;
     private final PasswordService passwordService;
-    private final WsContextStore wsContextStore;
 
     @Inject
     public UserService(
-            final AuthenticationService authenticationService,
             final UserDao userDao,
-            final PasswordService passwordService,
-            final WsContextStore wsContextStore) {
+            final PasswordService passwordService
+    ) {
         this.userDao = userDao;
         this.passwordService = passwordService;
-        this.wsContextStore = wsContextStore;
     }
 
     public User createUser(User user) {
         List<User> users = userDao.fetchByUsername(user.getUsername());
-        if(!users.isEmpty()){
+        if (!users.isEmpty()) {
             throw new UsernameAlreadyExistsException("Username " + user.getUsername() + " is already taken.");
         }
 

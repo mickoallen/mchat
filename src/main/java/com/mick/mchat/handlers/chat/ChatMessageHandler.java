@@ -1,7 +1,6 @@
 package com.mick.mchat.handlers.chat;
 
 import com.mick.mchat.handlers.chat.in.ChatMessageIn;
-import com.mick.mchat.handlers.chat.in.UserTypingIn;
 import com.mick.mchat.security.AuthenticationToken;
 import com.mick.mchat.websocket.inbound.InMessageHandler;
 import com.mick.mchat.websocket.inbound.InMessageType;
@@ -10,6 +9,9 @@ import com.mick.mchat.websocket.inbound.MChatMessageHandler;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * Handles chat messages.
+ */
 @Singleton
 public class ChatMessageHandler implements InMessageHandler {
     private final ChatMessageService chatMessageService;
@@ -21,17 +23,15 @@ public class ChatMessageHandler implements InMessageHandler {
         this.chatMessageService = chatMessageService;
     }
 
+    /**
+     * Handle an inbound chat message.
+     * @param inboundChatMessage
+     * @param authenticationToken
+     */
     @MChatMessageHandler(
             inType = InMessageType.CHAT_MESSAGE
     )
     public void handleChatMessage(ChatMessageIn inboundChatMessage, AuthenticationToken authenticationToken) {
-        chatMessageService.newInboundMessage(inboundChatMessage, authenticationToken);
-    }
-
-    @MChatMessageHandler(
-            inType = InMessageType.USER_TYPING_MESSAGE
-    )
-    public void handleUserTyping(UserTypingIn userTypingIn, AuthenticationToken authenticationToken) {
-        chatMessageService.userIsTyping(userTypingIn, authenticationToken);
+        chatMessageService.handleInboundMessage(inboundChatMessage, authenticationToken);
     }
 }

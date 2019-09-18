@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Handle conversation related things.
+ */
 @Singleton
 public class ConversationMessageHandler implements InMessageHandler {
 
@@ -46,8 +49,6 @@ public class ConversationMessageHandler implements InMessageHandler {
         //add current user to conversation
         createConversationIn.getUsers()
                 .add(authenticationToken.getUserUuid());
-        //add the requested users to the conversation
-        createConversationIn.getUsers().addAll(createConversationIn.getUsers());
 
         Conversation conversation = new Conversation();
         conversation.setName(createConversationIn.getName());
@@ -74,7 +75,7 @@ public class ConversationMessageHandler implements InMessageHandler {
             outType = OutMessageType.CONVERSATIONS_GET_ALL_RESPONSE
     )
     public ConversationsOut getAllConversationsForUser(ConversationGetIn conversationsGetMessage, AuthenticationToken authenticationToken) {
-        //todo - this isnt very efficient, will look into it later
+        //todo - this isn't very efficient, will look into it later if it becomes an issue
         List<Conversation> conversations = conversationService.getAllConversationsForUser(authenticationToken.getUserUuid());
         List<UserConversation> userConversations = conversationService.getUserConversations(
                 conversations
@@ -88,8 +89,7 @@ public class ConversationMessageHandler implements InMessageHandler {
                 conversations
                         .stream()
                         .map(Conversation::getUuid)
-                        .collect(Collectors.toList()),
-                conversationsGetMessage.getMessageOffset()
+                        .collect(Collectors.toList())
         );
 
         return ConversationMapper.toConversationsOut(conversations, userConversations, messagesForConversations);

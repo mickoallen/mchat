@@ -48,7 +48,7 @@ public class MChatWebsocketHandler implements WsConnectHandler, WsCloseHandler, 
     @Override
     public void handleClose(@NotNull WsCloseContext wsCloseContext) throws Exception {
         logger.debug("Websocket connection closed");
-        wsContextStore.removeUserWsContext(wsCloseContext.getSessionId());
+        wsContextStore.removeUserWsContextForSessionId(wsCloseContext.getSessionId());
     }
 
     @Override

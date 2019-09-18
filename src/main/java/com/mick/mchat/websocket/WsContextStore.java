@@ -63,14 +63,6 @@ public class WsContextStore {
         userWsContextMap.put(userUuid, userWsContext);
     }
 
-    public void removeUserWsContext(UUID userUuid, String sessionId) {
-        if(!userWsContextMap.containsKey(userUuid)){
-            return;
-        }
-        userWsContextMap.get(userUuid).removeWsContext(sessionId);
-    }
-
-
     public Map<UUID, UserWsContext> getContextMap() {
         return userWsContextMap;
     }
@@ -95,12 +87,12 @@ public class WsContextStore {
                 .anyMatch(Objects::nonNull);
     }
 
-    public void removeUserWsContext(String sessionId) {
+    public void removeUserWsContextForSessionId(String sessionId) {
         userWsContextMap.values()
                 .forEach(userWsContext -> userWsContext.removeWsContext(sessionId));
     }
 
-    public void removeUserWsContext(UUID userUuid) {
+    public void removeUserWsContextForUserUUID(UUID userUuid) {
         userWsContextMap.remove(userUuid);
     }
 }

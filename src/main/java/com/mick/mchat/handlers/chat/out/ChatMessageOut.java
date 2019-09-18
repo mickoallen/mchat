@@ -2,13 +2,17 @@ package com.mick.mchat.handlers.chat.out;
 
 import com.mick.mchat.websocket.outbound.OutMessage;
 
+import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * A chat message being sent back up a websocket.
+ */
 public class ChatMessageOut implements OutMessage {
     private UUID userUuid;
     private UUID conversationUuid;
     private String message;
-    private String type;
+    private ChatMessageType type;
     private long dateCreated;
 
     public String getMessage() {
@@ -38,11 +42,11 @@ public class ChatMessageOut implements OutMessage {
         return this;
     }
 
-    public String getType() {
+    public ChatMessageType getType() {
         return type;
     }
 
-    public ChatMessageOut setType(String type) {
+    public ChatMessageOut setType(ChatMessageType type) {
         this.type = type;
         return this;
     }
@@ -54,5 +58,33 @@ public class ChatMessageOut implements OutMessage {
     public ChatMessageOut setConversationUuid(UUID conversationUuid) {
         this.conversationUuid = conversationUuid;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "ChatMessageOut{" +
+                "userUuid=" + userUuid +
+                ", conversationUuid=" + conversationUuid +
+                ", message='" + message + '\'' +
+                ", type=" + type +
+                ", dateCreated=" + dateCreated +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChatMessageOut that = (ChatMessageOut) o;
+        return dateCreated == that.dateCreated &&
+                Objects.equals(userUuid, that.userUuid) &&
+                Objects.equals(conversationUuid, that.conversationUuid) &&
+                Objects.equals(message, that.message) &&
+                type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userUuid, conversationUuid, message, type, dateCreated);
     }
 }
